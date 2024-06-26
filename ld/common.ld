@@ -1,12 +1,12 @@
 /* Linker script to configure memory regions. */
 
-#include "mem_regions.h"
+INCLUDE "nrf9160.ld"
 
 SEARCH_DIR(.)
 GROUP(-lgcc -lc -lnosys)
 
 _flash_start = FLASH_START_S;
-_flash_len_s = FLASH_SIZE_S;
+_flash_len = FLASH_SIZE_S;
 
 _flash_nsc_len = FLASH_SIZE_NSC;
 _flash_nsc_start = FLASH_START_NSC;

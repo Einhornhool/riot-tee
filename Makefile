@@ -6,27 +6,26 @@
 # CMSIS can be found at https://github.com/ARM-software/CMSIS_5
 
 # Path to Toolchain
-TOOLCHAINPATH = /home/lena/apps/gcc-arm-11.2-2022.02-x86_64-arm-none-eabi
+TOOLCHAINPATH ?= /usr
 
 # Path to mergehex command
-MERGEHEX = /usr/bin/mergehex
+MERGEHEX ?= /usr/bin/mergehex
 
 # Paths to 3rd party dependencies
-NRFXPATH = ${PWD}/3rd-party/nrfx
-CMSISPATH = ${PWD}/3rd-party/CMSIS_5/CMSIS
+NRFXPATH ?= ${PWD}/3rd-party/nrfx
+CMSISPATH ?= ${PWD}/3rd-party/CMSIS_5/CMSIS
 
 # Specify project name, object files, headers (DEPS) and linker script
 PROJECT = riot-tee
 S_LDSCRIPT = ld/common.ld
-BUILDDIR = ./build
+BUILDDIR ?= $(PWD)/build
 NSC_LIB = ${BUILDDIR}/nsc_lib.o
-NS_INCLUDES = -Inon-secure
 
 # Startup and system code
 S_SOURCES = \
 	${NRFXPATH}/mdk/gcc_startup_nrf9160.S \
 	${NRFXPATH}/mdk/system_nrf9160.c \
-	src/main_s.c \
+	src/main.c \
 	src/non_secure_entry.c \
 
 # Common flags for CC, AS and LD
@@ -43,6 +42,7 @@ SIZETOOL = ${TOOLCHAINPATH}/bin/arm-none-eabi-size
 
 # Compiler flags
 CFLAGS = ${FLAGS} -std=c99 -Wall -Werror
+CFLAGS += -I$(PWD)/target/nrf9160
 CFLAGS += -I${CMSISPATH}/Core/Include
 CFLAGS += -I${NRFXPATH}
 CFLAGS += -I${NRFXPATH}/templates
@@ -62,6 +62,7 @@ S_LDFLAGS += --cmse-implib -Xlinker --out-implib=$(NSC_LIB) -Xlinker
 S_LDFLAGS += --gc-sections -Xlinker -Map="$(BUILDDIR)/$(PROJECT).map"
 S_LDFLAGS += --specs=nano.specs
 S_LDFLAGS += -L"${NRFXPATH}/mdk/"
+S_LDFLAGS += -L"target/nrf9160/"
 
 LIBS = -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
 
@@ -85,10 +86,12 @@ S_OBJECTS := $(subst $(NRFXPATH),nrfx,$(S_OBJECTS))
 # Finally, add build directory prefix
 S_OBJECTS := $(addprefix $(BUILDDIR)/,$(S_OBJECTS))
 
-# Build the project
-all: $(BUILDDIR)/$(PROJECT).axf
+PREPROCESSED_LDSCRIPT := $(BUILDDIR)/ldscript.lds
 
-$(BUILDDIR)/$(PROJECT).axf: $(S_OBJECTS)
+# Build the project
+all: $(BUILDDIR)/$(PROJECT).elf
+
+$(BUILDDIR)/$(PROJECT).elf: $(S_OBJECTS)
 	@echo "[LD] Linking boot image $@"
 	@$(LD) $(S_LDFLAGS) -o $@ $(S_OBJECTS) $(LIBS)
 	@echo "[OBJCOPY] $@ -> $(BUILDDIR)/$(PROJECT).hex"
@@ -98,13 +101,13 @@ $(BUILDDIR)/$(PROJECT).axf: $(S_OBJECTS)
 	@$(SIZETOOL) $@
 
 # Recipe for building C objects in the secure imaga
-$(BUILDDIR)/%.c.o: %.c
+$(BUILDDIR)/src/%.c.o: src/%.c
 	@echo "[CC] $< -> $@"
 	@mkdir -p $(@D)
 	$(CC) $(SFLAGS) $(CFLAGS) -c $< -o $@
 
 # Recipe for assembling C objects in the secure imaga
-$(BUILDDIR)/%.S.o: /%.S
+$(BUILDDIR)/src/%.S.o: src/%.S
 	@echo "[AS] $< -> $@"
 	@mkdir -p $(@D)
 	@$(AS) $(SFLAGS) $(S_INCLUDES) $(AFLAGS) -c $< -o $@
@@ -115,7 +118,7 @@ $(BUILDDIR)/nrfx/%.c.o: $(NRFXPATH)/%.c
 	@mkdir -p $(@D)
 	@$(CC) $(SFLAGS) $(CFLAGS) -c $< -o $@
 
-# Recipe for assembling objects in $(NRFXPATH) for the secure image
+# Recipe for assembling objects in $(NRFXPATH) for the image
 $(BUILDDIR)/nrfx/%.S.o: $(NRFXPATH)/%.S
 	@echo "[AS] $< -> $@"
 	@mkdir -p $(@D)
@@ -124,13 +127,3 @@ $(BUILDDIR)/nrfx/%.S.o: $(NRFXPATH)/%.S
 # Remove build folder
 clean:
 	rm -dfr $(BUILDDIR)
-
-# # Flash the program
-# flash: $(BUILDDIR)/$(PROJECT).hex
-# 	@echo Flashing $(BUILDDIR)/$(PROJECT).hex
-# 	@nrfjprog -f nrf91 --program $(BUILDDIR)/$(PROJECT).hex --sectorerase \
-# 	--verify --reset
-
-# erase:
-# 	@echo Erasing all flash
-# 	@nrfjprog -f nrf91 --eraseall
