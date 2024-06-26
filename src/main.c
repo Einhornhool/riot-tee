@@ -32,6 +32,8 @@ typedef int __attribute__((cmse_nonsecure_call)) nsfunc(void);
 
 int main(void)
 {
+    TZ_SAU_Disable();
+    SAU->CTRL |= SAU_CTRL_ALLNS_Msk;
     /* Flash is separated into 32 * 32KB regions.
        The first two (64KB) are secure, all others are NS */
     for (uint32_t i = 2; i < 32; i++) {
@@ -62,6 +64,10 @@ int main(void)
        NSC region is 32B, which is the smalles possible size */
     NRF_SPU_S->FLASHNSC[flash_nsc_id].REGION = flash_region;
     NRF_SPU_S->FLASHNSC[flash_nsc_id].SIZE = NRF_SPU_NSC_SIZE_32B;
+
+    NRF_SPU_S->PERIPHID[NRFX_PERIPHERAL_ID_GET(NRF_P0_NS)].PERM &= ~(SPU_FLASHREGION_PERM_SECATTR_Msk);
+    NRF_SPU_S->PERIPHID[NRFX_PERIPHERAL_ID_GET(NRF_UARTE0_NS)].PERM &= ~(SPU_FLASHREGION_PERM_SECATTR_Msk);
+    NRF_SPU_S->GPIOPORT[0].PERM = 0x00000000ul;
 
     /* Write NS vector table to SCB_NS->VTOR to be able to jump to NS image*/
     SCB_NS->VTOR = TZ_START_NS;
