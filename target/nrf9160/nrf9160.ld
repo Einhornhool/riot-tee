@@ -1,13 +1,13 @@
 /* Linker script to configure memory regions. */
 
 FLASH_START         = 0x0;
-FLASH_SIZE          = 0xfa000;   /*< 1024 MB */
+FLASH_SIZE          = 0x100000;   /*< 1024 MB */
 
 RAM_START           = 0x20000000;
-RAM_SIZE            = 0x3e800;     /*< 256 KB */
+RAM_SIZE            = 0x40000;     /*< 256 KB */
 
 FLASH_START_S       = FLASH_START;
-FLASH_SIZE_S        = 0xfa00;    /*< 64 KB*/
+FLASH_SIZE_S        = 0x10000;    /*< 64 KB*/
 
 RAM_START_S         = RAM_START;
 RAM_SIZE_S          = 0x16000;   /*< 90 KB*/

@@ -32,8 +32,6 @@ typedef int __attribute__((cmse_nonsecure_call)) nsfunc(void);
 
 int main(void)
 {
-    TZ_SAU_Disable();
-    SAU->CTRL |= SAU_CTRL_ALLNS_Msk;
     /* Flash is separated into 32 * 32KB regions.
        The first two (64KB) are secure, all others are NS */
     for (uint32_t i = 2; i < 32; i++) {
@@ -45,7 +43,7 @@ int main(void)
 
     /* RAM is separated into 32 * 8 KB regions.
        The first 8 are secure, all others are NS */
-    for (uint32_t i = 8; i < 32; ++i) {
+    for (uint32_t i = 11; i < 32; ++i) {
         /* Initial value is 0x0001 0101
            NS value is 0x0000 0101 */
         NRF_SPU_S->RAMREGION[i].PERM &=

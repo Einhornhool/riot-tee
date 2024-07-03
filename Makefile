@@ -86,8 +86,6 @@ S_OBJECTS := $(subst $(NRFXPATH),nrfx,$(S_OBJECTS))
 # Finally, add build directory prefix
 S_OBJECTS := $(addprefix $(BUILDDIR)/,$(S_OBJECTS))
 
-PREPROCESSED_LDSCRIPT := $(BUILDDIR)/ldscript.lds
-
 # Build the project
 all: $(BUILDDIR)/$(PROJECT).elf
 
