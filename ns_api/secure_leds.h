@@ -6,36 +6,42 @@
  */
 
 /**
- * @file        ns_entry.h
+ * @file        secure_leds.h
  * @brief
  *
  * @author      Lena Boeckmann <lena.boeckmann@haw-hamburg.de>
  *
  */
 
-#ifndef NS_ENTRY_H
-#define NS_ENTRY_H
+#ifndef SECURE_LEDS_H
+#define SECURE_LEDS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "secure_io.h"
-#include "tee_status.h"
+/**
+ * @brief   Configures LEDs 1-4 as outputs
+ */
+void config_leds(void);
 
 /**
- * @brief   Generic NS entry function
+ * @brief   Turn LED on
  *
- * @param in
- * @param out
+ * @param   offset  Index of LED to turn on
  */
-tee_status_t ns_entry(int32_t operation,
-                      io_pack_t *in,
-                      io_pack_t *out);
+void led_on(int offset);
+
+/**
+ * @brief   Turn LED off
+ *
+ * @param   offset  Index of LED to turn off
+ */
+void led_off(int offset);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* NS_ENTRY_H */
+#endif /* SECURE_LEDS_H */
 /** @} */
