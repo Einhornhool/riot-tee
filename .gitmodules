@@ -4,3 +4,6 @@
 [submodule "3rd-party/nrfx"]
 	path = 3rd-party/nrfx
 	url = https://github.com/NordicSemiconductor/nrfx.git
+[submodule "3rd-party/sdk-nrfxlib"]
+	path = 3rd-party/sdk-nrfxlib
+	url = https://github.com/nrfconnect/sdk-nrfxlib.git
