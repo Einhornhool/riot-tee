@@ -15,9 +15,9 @@
 #include <arm_cmse.h>
 #include <stdint.h>
 
-#include "tee_crypto.h"
+#include "crypto.h"
 #include "tee_status.h"
-#include "secure_io.h"
+#include "tee_secure_io.h"
 
 __attribute__((cmse_nonsecure_entry))
 tee_status_t ns_entry(int32_t operation,

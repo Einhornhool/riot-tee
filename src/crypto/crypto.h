@@ -7,30 +7,33 @@
  */
 
 /**
- * @file        tee_hashes.h
+ * @ingroup
+ * @defgroup       <name> <description>
+ * @{
+ *
+ * @file        tee_crypto.h
  * @brief
  *
  * @author      Lena Boeckmann <lena.boeckmann@haw-hamburg.de>
  *
  */
 
-#ifndef TEE_HASHES_H
-#define TEE_HASHES_H
+#ifndef CRYPTO_H
+#define CRYPTO_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "secure_io.h"
 #include "tee_status.h"
+#include "tee_crypto.h"
+#include "tee_secure_io.h"
 
-tee_status_t tee_hash_sha256_setup(io_pack_t *in, io_pack_t *out);
-tee_status_t tee_hash_sha256_update(io_pack_t *in, io_pack_t *out);
-tee_status_t tee_hash_sha256_finish(io_pack_t *in, io_pack_t *out);
+tee_status_t tee_crypto_dispatch(tee_operation_t operation, io_pack_t *in, io_pack_t *out);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TEE_HASHES_H */
+#endif /* CRYPTO_H */
 /** @} */

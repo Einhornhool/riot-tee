@@ -25,21 +25,22 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <stddef.h>
+#include "tee_secure_io.h"
 #include "tee_status.h"
-#include "secure_io.h"
+#include "tee_crypto.h"
 
 #define TEE_CRYPTO_OPERATION_BASE (0x1000)
 #define TEE_OPERATION_BASE_MASK   (0xF000)
 #define TEE_OPERATION_MASK        (0xFF00)
 
-#define TEE_HASH_OPERATION_BASE   (0x1100)
-#define TEE_HASH_SHA256_SETUP     (TEE_HASH_OPERATION_BASE | 0x0001)
-#define TEE_HASH_SHA256_UPDATE    (TEE_HASH_OPERATION_BASE | 0x0002)
-#define TEE_HASH_SHA256_FINISH    (TEE_HASH_OPERATION_BASE | 0x0003)
-
 typedef int32_t tee_operation_t;
 
-tee_status_t tee_crypto_dispatch(tee_operation_t operation, io_pack_t *in, io_pack_t *out);
+extern tee_status_t ns_entry(int32_t operation,
+                             io_pack_t *in,
+                             io_pack_t *out);
+
 
 #ifdef __cplusplus
 }

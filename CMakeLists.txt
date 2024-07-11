@@ -9,6 +9,11 @@ set(CMAKE_C_COMPILER    ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 set(CMAKE_ASM_COMPILER  ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 # endif()
 
+# set(FETCHCONTENT_BASE_DIR "${RIOT_FETCHCONTENT_BASE_DIR}")
+# set(NRFXPATH        "${FETCHCONTENT_BASE_DIR}/nrfx-src")
+# set(CMSISPATH       "${FETCHCONTENT_BASE_DIR}/cmsis_5-src/CMSIS")
+# set(OBERONPATH      "${FETCHCONTENT_BASE_DIR}/sdk-nrfxlib-src")
+
 if (NOT DEFINED NRFXPATH)
     set(NRFXPATH        "${CMAKE_SOURCE_DIR}/3rd-party/nrfx")
 endif()
@@ -27,6 +32,7 @@ set(MAP_FILE        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
 
 # Add crypto code as a library
 add_subdirectory(src/crypto)
+add_subdirectory(extern)
 
 set(FLAGS
     "-mcpu=cortex-m33"
@@ -40,11 +46,11 @@ set(SOURCES
     src/main.c
     src/ns_entry.c
     src/non_secure_entry.c
-    3rd-party/nrfx/mdk/system_nrf9160.c
+    ${NRFXPATH}/mdk/system_nrf9160.c
 )
 
 set(ASM_SOURCES
-    3rd-party/nrfx/mdk/gcc_startup_nrf9160.S
+    ${NRFXPATH}/mdk/gcc_startup_nrf9160.S
 )
 
 set_source_files_properties(${ASM_SOURCES}
@@ -70,12 +76,12 @@ target_include_directories(${EXECUTABLE_NAME}
     ns_api/crypto
     target/nrf9160
     src/crypto
-    3rd-party/CMSIS_5/CMSIS/Core/Include
-    3rd-party/nrfx
-    3rd-party/nrfx/mdk
-    3rd-party/nrfx/hal
-    3rd-party/nrfx/templates
-    3rd-party/nrfx/drivers/include
+    ${CMSISPATH}/Core/Include
+    ${NRFXPATH}
+    ${NRFXPATH}/mdk
+    ${NRFXPATH}/hal
+    ${NRFXPATH}/templates
+    ${NRFXPATH}/drivers/include
 )
 
 # Add compile definitions for NRFX
@@ -89,14 +95,6 @@ target_compile_options(${EXECUTABLE_NAME} PUBLIC
     ${FLAGS}
     "-mcmse"
 )
-
-set(DEBUG 1)
-if (DEBUG)
-    add_compile_options(-O0 -g3 -gdwarf-2)
-    add_link_options(-g3)
-else()
-    add_compile_options(-O3)
-endif()
 
 target_link_options(${EXECUTABLE_NAME}
     PUBLIC

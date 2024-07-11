@@ -1,4 +1,5 @@
 include(FetchContent)
+set(FETCHCONTENT_QUIET FALSE)
 
 FetchContent_Declare(
     cmsis_5
@@ -18,6 +19,17 @@ FetchContent_Declare(
     GIT_TAG         v2.7.0
 )
 
-FetchContent_MakeAvailable(cmsis_5)
-FetchContent_MakeAvailable(nrfx)
-FetchContent_MakeAvailable(sdk-nrfxlib)
+FetchContent_GetProperties(cmsis_5)
+if(NOT cmsis_5_POPULATED)
+    FetchContent_Populate(cmsis_5)
+endif()
+
+FetchContent_GetProperties(nrfx)
+if(NOT nrfx_POPULATED)
+    FetchContent_Populate(nrfx)
+endif()
+
+FetchContent_GetProperties(sdk-nrfxlib)
+if(NOT sdk-nrfxlib_POPULATED)
+    FetchContent_Populate(sdk-nrfxlib)
+endif()

@@ -18,17 +18,18 @@
  * @}
  */
 
+#include "hashes.h"
 #include "tee_hashes.h"
-#include "tee_crypto.h"
+#include "crypto.h"
 
 static tee_status_t tee_crypto_hash_dispatch(tee_operation_t operation, io_pack_t *in, io_pack_t *out) {
     switch(operation) {
     case TEE_HASH_SHA256_SETUP:
-        return tee_hash_sha256_setup(in, out);
+        return tee_sha256_setup(in, out);
     case TEE_HASH_SHA256_UPDATE:
-        return tee_hash_sha256_update(in, out);
+        return tee_sha256_update(in, out);
     case TEE_HASH_SHA256_FINISH:
-        return tee_hash_sha256_finish(in, out);
+        return tee_sha256_finish(in, out);
     default:
         return TEE_ERROR_NOT_SUPPORTED;
     }

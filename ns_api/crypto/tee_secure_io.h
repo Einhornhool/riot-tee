@@ -14,8 +14,8 @@
  *
  */
 
-#ifndef SECURE_IO_H
-#define SECURE_IO_H
+#ifndef TEE_SECURE_IO_H
+#define TEE_SECURE_IO_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,4 +32,4 @@ typedef struct {
 }
 #endif
 
-#endif /* SECURE_IO_H */
+#endif /* TEE_SECURE_IO_H */

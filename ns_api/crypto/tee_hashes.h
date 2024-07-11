@@ -11,40 +11,43 @@
  * @defgroup       <name> <description>
  * @{
  *
- * @file        crypto.h
+ * @file        tee_hashes.h
  * @brief
  *
  * @author      Lena Boeckmann <lena.boeckmann@haw-hamburg.de>
  *
  */
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#ifndef TEE_HASHES_H
+#define TEE_HASHES_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stddef.h>
-#include "secure_io.h"
-#include "ns_entry.h"
-#include "tee_status.h"
+#include "tee_secure_io.h"
 #include "tee_crypto.h"
 
-inline tee_status_t uapi_sha256_setup(void *ctx)
+#define TEE_HASH_OPERATION_BASE   (0x1100)
+#define TEE_HASH_SHA256_SETUP     (TEE_HASH_OPERATION_BASE | 0x0001)
+#define TEE_HASH_SHA256_UPDATE    (TEE_HASH_OPERATION_BASE | 0x0002)
+#define TEE_HASH_SHA256_FINISH    (TEE_HASH_OPERATION_BASE | 0x0003)
+
+typedef uint8_t tee_hash_ctx_t;
+
+inline tee_status_t tee_hashes_sha256_setup(void *ctx)
 {
-    io_pack_t in[1] = {
+    io_pack_t out[1] = {
         { .data = ctx, .len = 0 }
     };
 
-    io_pack_t *out = NULL;
+    io_pack_t *in = NULL;
 
     return ns_entry(TEE_HASH_SHA256_SETUP, in, out);
 }
 
-inline tee_status_t uapi_sha256_update(void *ctx,
-                                const uint8_t *input,
+inline tee_status_t tee_hashes_sha256_update(void *ctx,
+                                uint8_t *input,
                                 size_t input_length)
 {
     io_pack_t in[2] = {
@@ -57,7 +60,7 @@ inline tee_status_t uapi_sha256_update(void *ctx,
     return ns_entry(TEE_HASH_SHA256_UPDATE, in, out);
 }
 
-inline tee_status_t uapi_sha256_finish(void *ctx,
+inline tee_status_t tee_hashes_sha256_finish(void *ctx,
                                 uint8_t *hash,
                                 size_t hash_size,
                                 size_t *hash_length)
@@ -73,9 +76,10 @@ inline tee_status_t uapi_sha256_finish(void *ctx,
 
     return ns_entry(TEE_HASH_SHA256_UPDATE, in, out);
 }
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* CRYPTO_H */
+#endif /* TEE_HASHES_H */
 /** @} */
