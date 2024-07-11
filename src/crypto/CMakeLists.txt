@@ -1,5 +1,5 @@
-set(OBERONPATH      "${FETCHCONTENT_BASE_DIR}/sdk-nrfxlib-src/crypto/nrf_oberon")
-# set(OBERONPATH      "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
+# set(OBERONPATH      "${FETCHCONTENT_BASE_DIR}/sdk-nrfxlib-src/crypto/nrf_oberon")
+set(OBERONPATH      "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 set(RIOT_TEE_CRYPTO "riot-tee-crypto")
 

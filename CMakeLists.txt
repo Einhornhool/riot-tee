@@ -19,11 +19,11 @@ if (NOT DEFINED NRFXPATH)
 endif()
 
 if (NOT DEFINED CMSISPATH)
-    set(CMSISPATH       "${CMAKE_SOURCE_DIR/3rd-party/CMSIS_5/CMSIS}")
+    set(CMSISPATH       "${CMAKE_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
 endif()
 
 if (NOT DEFINED OBERONPATH)
-    set(OBERONPATH  "${CMAKE_SOURCE_DIR/3rd-party/sdk-nrfxlib}")
+    set(OBERONPATH  "${CMAKE_SOURCE_DIR}/3rd-party/sdk-nrfxlib")
 endif()
 
 set(LINKER_SCRIPT   "${CMAKE_SOURCE_DIR}/ld/common.ld")
@@ -32,7 +32,7 @@ set(MAP_FILE        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
 
 # Add crypto code as a library
 add_subdirectory(src/crypto)
-add_subdirectory(extern)
+# add_subdirectory(extern)
 
 set(FLAGS
     "-mcpu=cortex-m33"
