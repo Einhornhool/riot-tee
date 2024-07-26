@@ -13,19 +13,20 @@
  * @author      Lena Boeckmann <lena.boeckmann@haw-hamburg.de>
  */
 #include <arm_cmse.h>
-#include "nrfx.h"
+
+#include "secure_secure_leds.h"
 
 void __attribute__((cmse_nonsecure_entry)) config_leds(void)
 {
-    NRF_P0_S->DIRSET |= (1<<5) | (1<<4) | (1<<3) | (1<<2);
+    secure_config_leds();
 }
 
 void __attribute__((cmse_nonsecure_entry)) led_on(int offset)
 {
-    NRF_P0_S->OUTSET |= 1<<(offset+2);
+    secure_led_on(offset);
 }
 
 void __attribute__((cmse_nonsecure_entry)) led_off(int offset)
 {
-    NRF_P0_S->OUTCLR |= 1<<(offset+2);
+    secure_led_off(offset);
 }

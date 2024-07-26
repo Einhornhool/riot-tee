@@ -14,7 +14,6 @@
  */
 #include <arm_cmse.h>
 #include <stdint.h>
-
 #include "crypto.h"
 #include "tee_status.h"
 #include "tee_secure_io.h"

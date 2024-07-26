@@ -15,12 +15,13 @@
  */
 
 #include "tee_hashes.h"
+#include "tee_secure_io.h"
 #include "ocrypto_sha256.h"
 
 #define TEE_MAX_HASH_CTX        (8)
 
-static ocrypto_sha256_ctx sha256_ctx[TEE_MAX_HASH_CTX] = {};
-static uint8_t sha256_ctx_cnt = 0;
+ocrypto_sha256_ctx sha256_ctx[TEE_MAX_HASH_CTX] = {};
+uint8_t sha256_ctx_cnt = 0;
 
 tee_status_t tee_sha256_setup(io_pack_t *in, io_pack_t *out)
 {
@@ -31,9 +32,10 @@ tee_status_t tee_sha256_setup(io_pack_t *in, io_pack_t *out)
 
     uint8_t *ctx = out[0].data;
     ocrypto_sha256_init(&sha256_ctx[sha256_ctx_cnt]);
+    *ctx = sha256_ctx_cnt;
+
     sha256_ctx_cnt++;
 
-    *ctx = sha256_ctx_cnt;
     (void) in;
     return TEE_SUCCESS;
 }
