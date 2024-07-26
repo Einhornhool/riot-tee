@@ -26,7 +26,6 @@ extern "C" {
 #endif
 
 #include "tee_status.h"
-#include "tee_secure_io.h"
 #include "tee_crypto.h"
 
 #define TEE_HASH_OPERATION_BASE   (0x1100)
@@ -36,47 +35,16 @@ extern "C" {
 
 typedef uint8_t tee_hash_ctx_t;
 
-static inline tee_status_t tee_hashes_sha256_setup(void *ctx)
-{
-    io_pack_t out[1] = {
-        { .data = ctx, .len = 0 }
-    };
+tee_status_t tee_hashes_sha256_setup(void *ctx);
 
-    io_pack_t *in = NULL;
-
-    return ns_entry(TEE_HASH_SHA256_SETUP, in, out);
-}
-
-static inline tee_status_t tee_hashes_sha256_update(void *ctx,
+tee_status_t tee_hashes_sha256_update(void *ctx,
                                 const uint8_t *input,
-                                size_t input_length)
-{
-    io_pack_t in[2] = {
-        { .data = ctx, .len = 0 },
-        { .data = (uint8_t *)input, .len = input_length}
-    };
+                                size_t input_length);
 
-    io_pack_t *out = NULL;
-
-    return ns_entry(TEE_HASH_SHA256_UPDATE, in, out);
-}
-
-static inline tee_status_t tee_hashes_sha256_finish(void *ctx,
+tee_status_t tee_hashes_sha256_finish(void *ctx,
                                 uint8_t *hash,
                                 size_t hash_size,
-                                size_t *hash_length)
-{
-    io_pack_t in[1] = {
-        { .data = ctx, .len = 0 }
-    };
-
-    io_pack_t out[2] = {
-        { .data = hash, .len = hash_size },
-        { .data = hash_length, .len = sizeof(size_t)}
-    };
-
-    return ns_entry(TEE_HASH_SHA256_UPDATE, in, out);
-}
+                                size_t *hash_length);
 
 #ifdef __cplusplus
 }

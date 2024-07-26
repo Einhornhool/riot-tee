@@ -27,7 +27,6 @@ extern "C" {
 
 #include <stdint.h>
 #include <stddef.h>
-#include "tee_secure_io.h"
 #include "tee_status.h"
 #include "tee_crypto.h"
 
@@ -36,11 +35,6 @@ extern "C" {
 #define TEE_OPERATION_MASK        (0xFF00)
 
 typedef int32_t tee_operation_t;
-
-extern tee_status_t ns_entry(int32_t operation,
-                             io_pack_t *in,
-                             io_pack_t *out);
-
 
 #ifdef __cplusplus
 }
