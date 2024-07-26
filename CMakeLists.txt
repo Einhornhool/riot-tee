@@ -31,6 +31,7 @@ set(NSC_LIB         "${CMAKE_BINARY_DIR}/nsc_lib.o")
 set(MAP_FILE        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
 
 # Add crypto code as a library
+add_subdirectory(ns_api)
 add_subdirectory(src/crypto)
 # add_subdirectory(extern)
 
@@ -45,7 +46,7 @@ set(FLAGS
 set(SOURCES
     src/main.c
     src/ns_entry.c
-    src/non_secure_entry.c
+    # src/non_secure_entry.c
     ${NRFXPATH}/mdk/system_nrf9160.c
 )
 
@@ -72,8 +73,8 @@ add_executable(${EXECUTABLE_NAME}
 # Add include dirs to executable
 target_include_directories(${EXECUTABLE_NAME}
     PUBLIC
-    ns_api
-    ns_api/crypto
+    ns_api/include
+    ns_api/include/crypto
     target/nrf9160
     src/crypto
     ${CMSISPATH}/Core/Include
@@ -111,7 +112,8 @@ target_link_options(${EXECUTABLE_NAME}
 
 target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC
-    riot-tee-crypto
+    riot_tee_ns_api
+    riot_tee_crypto
     "-Wl,--start-group -lgcc -lc -lnosys"
     "-Wl,--end-group"
 )
