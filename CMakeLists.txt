@@ -9,11 +9,6 @@ set(CMAKE_C_COMPILER    ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 set(CMAKE_ASM_COMPILER  ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 # endif()
 
-# set(FETCHCONTENT_BASE_DIR "${RIOT_FETCHCONTENT_BASE_DIR}")
-# set(NRFXPATH        "${FETCHCONTENT_BASE_DIR}/nrfx-src")
-# set(CMSISPATH       "${FETCHCONTENT_BASE_DIR}/cmsis_5-src/CMSIS")
-# set(OBERONPATH      "${FETCHCONTENT_BASE_DIR}/sdk-nrfxlib-src")
-
 if (NOT DEFINED NRFXPATH)
     set(NRFXPATH        "${CMAKE_SOURCE_DIR}/3rd-party/nrfx")
 endif()
@@ -22,18 +17,10 @@ if (NOT DEFINED CMSISPATH)
     set(CMSISPATH       "${CMAKE_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
 endif()
 
-if (NOT DEFINED OBERONPATH)
-    set(OBERONPATH  "${CMAKE_SOURCE_DIR}/3rd-party/sdk-nrfxlib")
-endif()
-
 set(LINKER_SCRIPT   "${CMAKE_SOURCE_DIR}/ld/common.ld")
 set(NSC_LIB         "${CMAKE_BINARY_DIR}/nsc_lib.o")
 set(MAP_FILE        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
-
-# Add crypto code as a library
-add_subdirectory(ns_api)
-add_subdirectory(src/crypto)
-# add_subdirectory(extern)
+set(CMAKE_BUILD_TYPE "Debug")
 
 set(FLAGS
     "-mcpu=cortex-m33"
@@ -51,7 +38,8 @@ set(SOURCES
 )
 
 set(ASM_SOURCES
-    ${NRFXPATH}/mdk/gcc_startup_nrf9160.S
+    # ${NRFXPATH}/mdk/gcc_startup_nrf9160.S
+    target/nrf9160/startup.S
 )
 
 set_source_files_properties(${ASM_SOURCES}
@@ -75,8 +63,12 @@ target_include_directories(${EXECUTABLE_NAME}
     PUBLIC
     ns_api/include
     ns_api/include/crypto
+    ns_api/include/rot
     target/nrf9160
+    src/rot
     src/crypto
+    src/riot_tee_random
+    src
     ${CMSISPATH}/Core/Include
     ${NRFXPATH}
     ${NRFXPATH}/mdk
@@ -91,6 +83,13 @@ target_compile_definitions(${EXECUTABLE_NAME}
     NRF9160_XXAA
     FLOAT_ABI_HARD
 )
+
+# Add crypto code as a library
+add_subdirectory(ns_api)
+add_subdirectory(src/crypto)
+add_subdirectory(src/rot)
+add_subdirectory(src/random)
+# add_subdirectory(extern)
 
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
     ${FLAGS}
@@ -114,6 +113,8 @@ target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC
     riot_tee_ns_api
     riot_tee_crypto
+    riot_tee_rot
+    riot_tee_random
     "-Wl,--start-group -lgcc -lc -lnosys"
     "-Wl,--end-group"
 )
