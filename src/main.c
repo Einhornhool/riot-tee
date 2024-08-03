@@ -20,11 +20,13 @@
 #include <stddef.h>                     // Defines NULL
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
+#include <stdio.h>
 
 #include <arm_cmse.h>
 
 #include "nrf_spu.h"
 #include "nrfx.h"
+#include "rot.h"
 
 const unsigned long TZ_START_NS = 0x10000ul;
 
@@ -69,6 +71,14 @@ int main(void)
     NRF_SPU_S->PERIPHID[NRFX_PERIPHERAL_ID_GET(NRF_TIMER1_NS)].PERM &= ~(SPU_FLASHREGION_PERM_SECATTR_Msk);
     NRF_SPU_S->GPIOPORT[0].PERM = 0x00000000ul;
 
+    rot_get_random_seed();
+    rot_init_random_with_seed();
+
+    tee_status_t status = rot_try_generate_aes_key();
+    if (status != TEE_SUCCESS || status != TEE_ERROR_ALREADY_EXISTS) {
+        puts("AES Platform key generation failed");
+    }
+
     /* Write NS vector table to SCB_NS->VTOR to be able to jump to NS image*/
     SCB_NS->VTOR = TZ_START_NS;
     uint32_t* vtor = (uint32_t*)TZ_START_NS;
@@ -76,9 +86,7 @@ int main(void)
     nsfunc *ns_reset_handler = (nsfunc*)(vtor[1]); // Pointer to non-secure Reset_Handler
     ns_reset_handler();
 
-    while ( true )
-    {
-    }
+    while (1) {}
 
     /* Execution should not come here during normal operation */
     return ( EXIT_FAILURE );

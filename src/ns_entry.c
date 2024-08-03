@@ -14,19 +14,18 @@
  */
 #include <arm_cmse.h>
 #include <stdint.h>
-#include "crypto.h"
 #include "tee_status.h"
-#include "tee_secure_io.h"
+#include "operation_table.h"
 
 __attribute__((cmse_nonsecure_entry))
 tee_status_t ns_entry(int32_t operation,
                       io_pack_t *in,
                       io_pack_t *out)
 {
-    switch(operation & TEE_OPERATION_BASE_MASK) {
-        case TEE_CRYPTO_OPERATION_BASE:
-            return tee_crypto_dispatch(operation, in, out);
-        default:
-            return TEE_ERROR_NOT_SUPPORTED;
+    tee_operation_t function = tee_operation_table[operation];
+    if (function == NULL) {
+        return TEE_ERROR_NOT_SUPPORTED;
     }
+
+    return function(in, out);
 }
