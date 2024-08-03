@@ -24,7 +24,11 @@ extern "C" {
 #include <stdint.h>
 
 #define TEE_SUCCESS                     (0)
+#define TEE_ERROR_NOT_PERMITTED         (-133)
 #define TEE_ERROR_NOT_SUPPORTED         (-134)
+#define TEE_ERROR_INVALID_ARGUMENT      (-135)
+#define TEE_ERROR_BUFFER_TOO_SMALL      (-138)
+#define TEE_ERROR_ALREADY_EXISTS        (-139)
 #define TEE_ERROR_INSUFFICIENT_MEMORY   (-141)
 
 typedef int32_t tee_status_t;

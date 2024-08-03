@@ -25,13 +25,12 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
 #include "tee_status.h"
-#include "tee_crypto.h"
 
-#define TEE_HASH_OPERATION_BASE   (0x1100)
-#define TEE_HASH_SHA256_SETUP     (TEE_HASH_OPERATION_BASE | 0x0001)
-#define TEE_HASH_SHA256_UPDATE    (TEE_HASH_OPERATION_BASE | 0x0002)
-#define TEE_HASH_SHA256_FINISH    (TEE_HASH_OPERATION_BASE | 0x0003)
+#define TEE_HASH_SHA256_SETUP     (0x11)
+#define TEE_HASH_SHA256_UPDATE    (0x12)
+#define TEE_HASH_SHA256_FINISH    (0x13)
 
 typedef uint8_t tee_hash_ctx_t;
 
