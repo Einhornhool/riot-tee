@@ -31,4 +31,10 @@ SECTIONS
       *(.gnu.sgstubs*)
       . = ALIGN(32);
   } > FLASH_NSC
+
+  .stack (NOLOAD):
+  {
+    KEEP (*(.puf))
+    . = ALIGN(8);
+  } > RAM
 }
