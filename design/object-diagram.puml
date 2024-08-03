@@ -1,0 +1,86 @@
+@startuml
+
+namespace ns_api.crypto {
+    entity hashes {
+        tee_hashes_sha256_setup
+        tee_hashes_sha256_update
+        tee_hashes_sha256_finish
+    }
+    entity ecc {
+        tee_ecc_p256_import_key
+        tee_ecc_p256_generate_key
+        tee_ecc_p256_sign
+        tee_ecc_p256_verify
+    }
+    entity cipher {
+        tee_cipher_aes_128_import_key
+        tee_cipher_aes_128_ecb
+    }
+}
+
+namespace nsc {
+    entity Entry {
+        ns_entry
+    }
+}
+
+ns_api.crypto.hashes ---> Entry::ns_entry
+ns_api.crypto.ecc ---> Entry::ns_entry
+ns_api.crypto.cipher ---> Entry::ns_entry
+
+namespace secure.crypto {
+    entity hashes {
+        tee_sha256_setup
+        tee_sha256_update
+        tee_sha256_finish
+    }
+    entity ecc {
+        tee_p256_import_key
+        tee_p256_generate_key
+        tee_p256_sign
+        tee_p256_verify
+    }
+    entity cipher {
+        tee_aes_128_import_key
+        tee_aes_128_ecb
+    }
+}
+
+namespace secure.rot {
+    entity API {
+        rot_gen_aes_key
+        rot_gen_p256_key
+        rot_encrypt_key
+        rot_decrypt_key
+        rot_sign
+        rot_export_public_key
+        rot_get_random_seed
+        rot_init_random_with_seed
+    }
+}
+
+namespace secure.random {
+    entity API {
+        random_init
+        random_init_by_array
+        random_bytes
+        random_uint32
+    }
+}
+
+namespace secure.oberon {
+
+}
+
+Entry ---> secure.crypto.hashes
+Entry ---> secure.crypto.ecc
+Entry ---> secure.crypto.cipher
+
+secure.crypto.cipher ---> secure.rot.API
+secure.crypto.ecc ---> secure.rot.API
+secure.crypto --> secure.oberon
+secure.crypto ---> secure.random.API
+
+secure.random <- secure.rot.API
+
+@enduml
