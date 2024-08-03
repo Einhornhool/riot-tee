@@ -1,12 +1,9 @@
-# set(OBERONPATH      "${FETCHCONTENT_BASE_DIR}/sdk-nrfxlib-src/crypto/nrf_oberon")
 set(OBERONPATH      "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 set(LIBRARY_NAME "riot_tee_crypto")
-set(CMAKE_BUILD_TYPE "Debug")
 
 add_library(${LIBRARY_NAME}
     STATIC
-    crypto.c
     hashes.c
 )
 
@@ -15,6 +12,7 @@ target_include_directories(${LIBRARY_NAME}
     ${CMAKE_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/ns_api/include
     ${PROJECT_SOURCE_DIR}/ns_api/include/crypto
+    ${PROJECT_SOURCE_DIR}/src/random
     ${OBERONPATH}/include
 )
 target_compile_definitions(${LIBRARY_NAME}
@@ -25,11 +23,7 @@ target_compile_definitions(${LIBRARY_NAME}
 
 target_compile_options(${LIBRARY_NAME}
     PUBLIC
-    "-mcpu=cortex-m33"
-    "-mthumb"
-    "-mfloat-abi=hard"
-    "-mabi=aapcs"
-    "-mfpu=fpv5-sp-d16"
+    ${FLAGS}
 )
 
 target_link_libraries(${LIBRARY_NAME}
