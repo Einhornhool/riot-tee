@@ -71,6 +71,13 @@ int main(void)
     NRF_SPU_S->PERIPHID[NRFX_PERIPHERAL_ID_GET(NRF_TIMER1_NS)].PERM &= ~(SPU_FLASHREGION_PERM_SECATTR_Msk);
     NRF_SPU_S->GPIOPORT[0].PERM = 0x00000000ul;
 
+    /* Make sure, floating point registers are cleared when returning to non-secure world */
+    FPU->FPCCR |= FPU_FPCCR_TS_Msk | FPU_FPCCR_CLRONRET_Msk | FPU_FPCCR_CLRONRETS_Msk;
+
+    /* Raise NS exception priority to 0x80 to prevent preemption of secure fault exceptions */
+    SCB->AIRCR |= SCB_AIRCR_PRIS_Msk;
+
+    /* Initialize the random number generator */
     rot_get_random_seed();
     rot_init_random_with_seed();
 
