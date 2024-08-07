@@ -30,6 +30,7 @@ extern "C" {
 #define TEE_ERROR_BUFFER_TOO_SMALL      (-138)
 #define TEE_ERROR_ALREADY_EXISTS        (-139)
 #define TEE_ERROR_INSUFFICIENT_MEMORY   (-141)
+#define TEE_ERROR_CORRUPTION_DETECTED   (-151)
 
 typedef int32_t tee_status_t;
 

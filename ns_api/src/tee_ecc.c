@@ -1,24 +1,25 @@
 #include "tee_ecc.h"
 #include "tee_secure_io.h"
 
-tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer, uint8_t *pub_key_buffer,
+tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
+                                              size_t priv_key_buffer_size,
+                                              uint8_t *pub_key_buffer,
+                                              size_t pub_key_buffer_size,
                                               size_t *priv_key_buffer_length,
                                               size_t *pub_key_buffer_length)
 {
-    io_pack_t in[2] = {
-        { .data = priv_key_buffer, .len = 0 },
-        { .data = pub_key_buffer, .len = 0 }
-    };
-
-    io_pack_t out[2] = {
+    io_pack_t out[4] = {
+        { .data = priv_key_buffer, .len = priv_key_buffer_size },
+        { .data = pub_key_buffer, .len = pub_key_buffer_size },
         { .data = priv_key_buffer_length, .len = sizeof(size_t) },
         { .data = pub_key_buffer_length, .len = sizeof(size_t) }
     };
 
-    return ns_entry(TEE_ECC_P256_GENERATE, in, out);
+    return ns_entry(TEE_ECC_P256_GENERATE, NULL, out);
 }
 
-tee_status_t tee_import_ecc_p256r1_key_pair(uint8_t *priv_key_buffer, uint8_t *pub_key_buffer,
+tee_status_t tee_import_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
+                                            uint8_t *pub_key_buffer,
                                             size_t *priv_key_buffer_length,
                                             size_t *pub_key_buffer_length)
 {
