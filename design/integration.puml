@@ -1,0 +1,105 @@
+@startuml
+
+node "RIOT" {
+    package ns_api {
+        package Crypto {
+            entity Hashes {
+                nsapi_hashes_sha256_setup
+                nsapi_hashes_sha256_update
+                nsapi_hashes_sha256_finish
+            }
+            entity ECC {
+                nsapi_ecc_p256_import_key
+                nsapi_ecc_p256_generate_key
+                nsapi_ecc_p256_sign
+                nsapi_ecc_p256_verify
+            }
+            entity Cipher {
+                nsapi_cipher_aes_128_import_key
+                nsapi_cipher_aes_128_ecb
+            }
+        }
+
+        package Random {
+            entity Random {
+                nsapi_random_bytes
+                nsapi_random_uint32
+            }
+        }
+
+        package Platform {
+            entity PlatformService {
+                nsapi_platform_sign
+                nsapi_platform_export_public_key
+            }
+        }
+    }
+}
+package SecureFwEntry {
+    map sfw_entry {
+        ns_entry => ecalls
+    }
+}
+
+node "Secure Firmware" {
+    entity CallTable {}
+    SecureFwEntry.sfw_entry --> CallTable
+
+    package Crypto {
+        entity Hashes {
+            sfw_sha256_setup
+            sfw_sha256_update
+            sfw_sha256_finish
+        }
+        entity ECC {
+            sfw_ecc_p256_import_key
+            sfw_ecc_p256_generate_key
+            sfw_ecc_p256_sign
+            sfw_ecc_p256_verify
+        }
+        entity Cipher {
+            sfw_aes_128_import_key
+            sfw_aes_128_ecb
+        }
+        CallTable --> Hashes
+        CallTable --> ECC
+        CallTable --> Cipher
+    }
+
+    entity Entropy {
+        sfw_puf_generate
+        sfw_puf_init
+    }
+
+    entity Random {
+        sfw_random_bytes
+        sfw_random_uint32
+    }
+    CallTable --> Random
+    Random --> Entropy
+
+    entity RoT {
+        ~rot_gen_aes_key
+        ~rot_gen_p256_key
+        ~rot_encrypt_key
+        ~rot_decrypt_key
+        +rot_sign
+        +rot_export_public_key
+    }
+
+    Crypto.Hashes --> RoT
+    Crypto.ECC --> RoT
+    Crypto.Cipher --> RoT
+    CallTable --> RoT
+
+    RoT --> Random
+}
+
+RIOT.ns_api.Crypto ---> SecureFwEntry.sfw_entry
+RIOT.ns_api.Random ---> SecureFwEntry.sfw_entry
+RIOT.ns_api.Platform ---> SecureFwEntry.sfw_entry
+
+
+
+
+@enduml

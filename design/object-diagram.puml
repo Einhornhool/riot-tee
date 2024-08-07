@@ -18,6 +18,20 @@ namespace ns_api.crypto {
     }
 }
 
+namespace ns_api.random {
+    entity random {
+        tee_random_bytes
+        tee_random_uint32
+    }
+}
+
+namespace ns_api.platform {
+    entity platform_service {
+        platform_sign
+        platform_export_public_key
+    }
+}
+
 namespace nsc {
     entity Entry {
         ns_entry
@@ -27,6 +41,10 @@ namespace nsc {
 ns_api.crypto.hashes ---> Entry::ns_entry
 ns_api.crypto.ecc ---> Entry::ns_entry
 ns_api.crypto.cipher ---> Entry::ns_entry
+
+ns_api.random.random ---> Entry::ns_entry
+
+ns_api.platform.platform_service  ---> Entry::ns_entry
 
 namespace secure.crypto {
     entity hashes {
