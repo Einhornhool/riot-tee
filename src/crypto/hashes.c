@@ -20,14 +20,19 @@
 
 #define TEE_MAX_HASH_CTX        (8)
 
-ocrypto_sha256_ctx sha256_ctx[TEE_MAX_HASH_CTX] = {};
+ocrypto_sha256_ctx sha256_ctx[TEE_MAX_HASH_CTX];
 uint8_t sha256_ctx_cnt = 0;
 
-tee_status_t tee_sha256_setup(io_pack_t *in, io_pack_t *out)
+tee_status_t hashes_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
     if (sha256_ctx_cnt >= TEE_MAX_HASH_CTX)
     {
         return TEE_ERROR_INSUFFICIENT_MEMORY;
+    }
+
+    if (out_len < 1)
+    {
+        return TEE_ERROR_INVALID_ARGUMENT;
     }
 
     uint8_t *ctx = out[0].data;
@@ -40,10 +45,15 @@ tee_status_t tee_sha256_setup(io_pack_t *in, io_pack_t *out)
     return TEE_SUCCESS;
 }
 
-tee_status_t tee_sha256_update(io_pack_t *in, io_pack_t *out)
+tee_status_t hashes_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    uint8_t *ctx = in[0].data;
-    uint8_t *input = in[1].data;
+    if (in_len < 2)
+    {
+        return TEE_ERROR_INVALID_ARGUMENT;
+    }
+
+    const uint8_t *ctx = in[0].data;
+    const uint8_t *input = in[1].data;
     size_t input_size = in[1].len;
 
     ocrypto_sha256_update(&sha256_ctx[*ctx], input, input_size);
@@ -52,9 +62,14 @@ tee_status_t tee_sha256_update(io_pack_t *in, io_pack_t *out)
     return TEE_SUCCESS;
 }
 
-tee_status_t tee_sha256_finish(io_pack_t *in, io_pack_t *out)
+tee_status_t hashes_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    uint8_t *ctx = in[0].data;
+    if (in_len < 1 || out_len < 2)
+    {
+        return TEE_ERROR_INVALID_ARGUMENT;
+    }
+
+    const uint8_t *ctx = in[0].data;
     uint8_t *hash_out = out[0].data;
     size_t *hash_len_out = out[1].data;
     ocrypto_sha256_final(&sha256_ctx[*ctx], hash_out);

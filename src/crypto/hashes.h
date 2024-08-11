@@ -24,9 +24,9 @@ extern "C" {
 #include "tee_secure_io.h"
 #include "tee_status.h"
 
-tee_status_t tee_sha256_setup(io_pack_t *in, io_pack_t *out);
-tee_status_t tee_sha256_update(io_pack_t *in, io_pack_t *out);
-tee_status_t tee_sha256_finish(io_pack_t *in, io_pack_t *out);
+tee_status_t hashes_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
+tee_status_t hashes_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
+tee_status_t hashes_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
 
 #ifdef __cplusplus
 }
