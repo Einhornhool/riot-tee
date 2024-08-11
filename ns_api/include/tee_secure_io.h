@@ -24,9 +24,24 @@ extern "C" {
 #include <stddef.h>
 
 typedef struct {
+    const void* data;
+    size_t len;
+} io_pack_in_t;
+
+typedef struct {
     void* data;
     size_t len;
-} io_pack_t;
+} io_pack_out_t;
+
+typedef struct {
+    int32_t operation;
+    size_t in_len;
+    size_t out_len;
+} io_operation_info_t;
+
+extern tee_status_t ns_entry(io_operation_info_t *op_info,
+                             io_pack_in_t *in,
+                             io_pack_out_t *out);
 
 #ifdef __cplusplus
 }

@@ -34,13 +34,13 @@ extern "C" {
 
 typedef uint8_t tee_hash_ctx_t;
 
-tee_status_t tee_hashes_sha256_setup(void *ctx);
+tee_status_t tee_hashes_sha256_setup(tee_hash_ctx_t *ctx);
 
-tee_status_t tee_hashes_sha256_update(void *ctx,
+tee_status_t tee_hashes_sha256_update(tee_hash_ctx_t *ctx,
                                 const uint8_t *input,
                                 size_t input_length);
 
-tee_status_t tee_hashes_sha256_finish(void *ctx,
+tee_status_t tee_hashes_sha256_finish(tee_hash_ctx_t *ctx,
                                 uint8_t *hash,
                                 size_t hash_size,
                                 size_t *hash_length);

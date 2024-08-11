@@ -24,6 +24,7 @@ extern "C" {
 #include <stdint.h>
 
 #define TEE_SUCCESS                     (0)
+#define TEE_ERROR_GENERIC_ERROR         (-132)
 #define TEE_ERROR_NOT_PERMITTED         (-133)
 #define TEE_ERROR_NOT_SUPPORTED         (-134)
 #define TEE_ERROR_INVALID_ARGUMENT      (-135)

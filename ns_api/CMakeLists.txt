@@ -3,6 +3,8 @@ set(LIBRARY_NAME "riot_tee_ns_api")
 add_library(${LIBRARY_NAME}
     STATIC
     src/tee_hashes.c
+    src/tee_random.c
+    src/tee_ecc.c
 )
 
 target_include_directories(${LIBRARY_NAME}
