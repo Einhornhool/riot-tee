@@ -20,6 +20,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "tee_status.h"
+#include "tee_secure_io.h"
 #include "ocrypto_sha256.h"
 
 /* state size is digest length of SHA-256 */
@@ -106,6 +108,17 @@ void random_bytes(uint8_t *bytes, size_t size)
             datapos = 0;
         }
     }
+}
+
+tee_status_t generate_random_bytes(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
+{
+    if (in_len != 0 || out_len != 1)
+    {
+        return TEE_ERROR_INVALID_ARGUMENT;
+    }
+
+    random_bytes(out[0].data, out[0].len);
+    return TEE_SUCCESS;
 }
 
 void random_init_by_array(uint32_t init_key[], int key_length)

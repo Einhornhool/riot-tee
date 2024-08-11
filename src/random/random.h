@@ -36,6 +36,9 @@
 #include <inttypes.h>
 #include <stddef.h>
 
+#include "tee_status.h"
+#include "tee_secure_io.h"
+
 /**
  * @brief initializes PRNG with a seed
  *
@@ -59,7 +62,7 @@ void random_init(uint32_t s);
  * @param init_key array of keys (seeds) to initialize the PRNG
  * @param key_length number of lements in init_key
  */
-void random_init_by_array(uint32_t init_key[], int key_length);
+tee_status_t random_init_by_array(uint32_t init_key[], int key_length);
 
 /**
  * @brief generates a random number on [0,0xffffffff]-interval
@@ -71,6 +74,17 @@ uint32_t random_uint32(void);
  * @brief writes random bytes in the [0,0xff]-interval to memory
  */
 void random_bytes(void *buf, size_t size);
+
+/**
+ * @brief
+ *
+ * @param in
+ * @param in_len
+ * @param out
+ * @param out_len
+ * @return tee_status_t
+ */
+tee_status_t generate_random_bytes(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
 
 #endif /* RANDOM_H */
 /** @} */

@@ -1,5 +1,6 @@
 set(LIBRARY_NAME "riot_tee_random")
 set(OBERONPATH   "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
+set(CMAKE_BUILD_TYPE "Debug")
 
 add_library(${LIBRARY_NAME}
     STATIC
