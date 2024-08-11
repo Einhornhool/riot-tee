@@ -67,7 +67,7 @@ target_include_directories(${EXECUTABLE_NAME}
     target/nrf9160
     src/rot
     src/crypto
-    src/riot_tee_random
+    src/random
     src
     ${CMSISPATH}/Core/Include
     ${NRFXPATH}

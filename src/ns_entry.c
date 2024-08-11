@@ -14,18 +14,20 @@
  */
 #include <arm_cmse.h>
 #include <stdint.h>
+#include <stddef.h>
+
 #include "tee_status.h"
 #include "operation_table.h"
 
 __attribute__((cmse_nonsecure_entry))
-tee_status_t ns_entry(int32_t operation,
-                      io_pack_t *in,
-                      io_pack_t *out)
+tee_status_t ns_entry(io_operation_info_t *op_info,
+                      io_pack_in_t *in,
+                      io_pack_out_t *out)
 {
-    tee_operation_t function = tee_operation_table[operation];
+    tee_operation_t function = tee_operation_table[op_info->operation];
     if (function == NULL) {
         return TEE_ERROR_NOT_SUPPORTED;
     }
 
-    return function(in, out);
+    return function(in, op_info->in_len , out, op_info->out_len);
 }
