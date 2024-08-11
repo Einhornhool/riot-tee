@@ -91,7 +91,7 @@ tee_status_t rot_decrypt_key(uint8_t *key_in, size_t key_in_size, uint8_t *key_o
  * @param   out
  * @return tee_status_t
  */
-tee_status_t rot_sign(io_pack_t *in, io_pack_t *out);
+tee_status_t rot_sign(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
 
 /**
  * @brief   Generate the public key of the RoT ECC P256 key
@@ -100,7 +100,7 @@ tee_status_t rot_sign(io_pack_t *in, io_pack_t *out);
  * @param   out
  * @return tee_status_t
  */
-tee_status_t rot_export_public_key(io_pack_t *in, io_pack_t *out);
+tee_status_t rot_export_public_key(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
 
 /**
  * @brief Builds hash from uninitialized SRAM and stores it to use as random seed

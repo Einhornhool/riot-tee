@@ -94,16 +94,20 @@ tee_status_t rot_decrypt_key(uint8_t *key_in, size_t key_in_size, uint8_t *key_o
     return TEE_SUCCESS;
 }
 
-tee_status_t rot_sign(io_pack_t *in, io_pack_t *out)
+tee_status_t rot_sign(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len)
 {
     (void) in;
+    (void) in_len;
     (void) out;
+    (void) out_len;
     return TEE_ERROR_NOT_SUPPORTED;
 }
 
-tee_status_t rot_export_public_key(io_pack_t *in, io_pack_t *out)
+tee_status_t rot_export_public_key(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len)
 {
     (void) in;
+    (void) in_len;
     (void) out;
+    (void) out_len;
     return TEE_ERROR_NOT_SUPPORTED;
 }
