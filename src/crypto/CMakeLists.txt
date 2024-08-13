@@ -15,6 +15,7 @@ target_include_directories(${LIBRARY_NAME}
     ${PROJECT_SOURCE_DIR}/ns_api/include
     ${PROJECT_SOURCE_DIR}/ns_api/include/crypto
     ${PROJECT_SOURCE_DIR}/src/random
+    ${PROJECT_SOURCE_DIR}/src
     ${OBERONPATH}/include
 )
 target_compile_definitions(${LIBRARY_NAME}

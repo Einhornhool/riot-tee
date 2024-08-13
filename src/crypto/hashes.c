@@ -17,6 +17,7 @@
 #include "tee_hashes.h"
 #include "tee_secure_io.h"
 #include "ocrypto_sha256.h"
+#include "io_sanitizer.h"
 
 #define TEE_MAX_HASH_CTX        (8)
 
@@ -30,48 +31,67 @@ tee_status_t hashes_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t 
         return TEE_ERROR_INSUFFICIENT_MEMORY;
     }
 
-    if (out_len < 1)
+    if (out_len != 1)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    uint8_t *ctx = out[0].data;
+    tee_hash_ctx_t *ctx = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+
+    if (ctx == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     ocrypto_sha256_init(&sha256_ctx[sha256_ctx_cnt]);
     *ctx = sha256_ctx_cnt;
 
     sha256_ctx_cnt++;
 
     (void) in;
+    (void) in_len;
     return TEE_SUCCESS;
 }
 
 tee_status_t hashes_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len < 2)
+    if (in_len != 2)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    const uint8_t *ctx = in[0].data;
-    const uint8_t *input = in[1].data;
+    tee_hash_ctx_t *ctx = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *input = cmse_check_address_range(in[1].data, in[1].len, CMSE_NONSECURE);
+
+    if (ctx == NULL || input == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     size_t input_size = in[1].len;
 
     ocrypto_sha256_update(&sha256_ctx[*ctx], input, input_size);
 
     (void) out;
+    (void) out_len;
     return TEE_SUCCESS;
 }
 
 tee_status_t hashes_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len < 1 || out_len < 2)
+    if (in_len != 1 || out_len != 2)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    const uint8_t *ctx = in[0].data;
-    uint8_t *hash_out = out[0].data;
-    size_t *hash_len_out = out[1].data;
+    tee_hash_ctx_t *ctx = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *hash_out = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    size_t *hash_len_out = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+
+    if (ctx == NULL || hash_out == NULL || hash_len_out == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
+    size_t hash_out_size = out[0].len;
+
     ocrypto_sha256_final(&sha256_ctx[*ctx], hash_out);
 
     *hash_len_out = ocrypto_sha256_BYTES;

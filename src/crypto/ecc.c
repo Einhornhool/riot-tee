@@ -1,3 +1,4 @@
+#include "io_sanitizer.h"
 #include "ecc.h"
 #include "random.h"
 #include "ocrypto_ecdsa_p256.h"
@@ -11,14 +12,20 @@
 
 tee_status_t ecc_generate_p256r1_key_pair(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (out_len < 2)
+    if (out_len != 2)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
     int timeout = 0;
-    uint8_t *priv_key = out[0].data;
-    uint8_t *pub_key = out[1].data;
+
+    uint8_t *priv_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+
+    if (priv_key == NULL || pub_key == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     size_t priv_key_len = out[0].len;
     size_t pub_key_len = out[1].len;
 
@@ -39,26 +46,31 @@ tee_status_t ecc_generate_p256r1_key_pair(io_pack_in_t *in, size_t in_len, io_pa
     }
 
     (void) in;
+    (void) in_len;
     return TEE_SUCCESS;
 }
 
 tee_status_t ecc_p256r1_sign_hash(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len < 2 || out_len < 2)
+    if (in_len != 2 || out_len != 2)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
     int timeout = 0;
-    const uint8_t *key = in[0].data;
+    uint8_t *key = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *hash = cmse_check_address_range(in[1].data, in[1].len, CMSE_NONSECURE);
+
+    uint8_t *signature = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    size_t *signature_length = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+
+    if (key == NULL || hash == NULL || signature == NULL || signature_length == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     size_t key_len = in[0].len;
-
-    const uint8_t *hash = in[1].data;
     size_t hash_len = in[1].len;
-
-    uint8_t *signature = out[0].data;
     size_t signature_size = out[0].len;
-    size_t *signature_length = out[1].data;
 
     if (key_len != ECC_P256_PRIV_KEY_SIZE ||
         hash_len != ECC_P256_HASH_SIZE ||
@@ -83,21 +95,25 @@ tee_status_t ecc_p256r1_sign_hash(io_pack_in_t *in, size_t in_len, io_pack_out_t
 
 tee_status_t ecc_p256r1_sign_message(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len < 2 || out_len < 2)
+    if (in_len != 2 || out_len != 2)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
     int timeout = 0;
-    const uint8_t *key = in[0].data;
+    uint8_t *key = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *input = cmse_check_address_range(in[1].data, in[1].len, CMSE_NONSECURE);
+
+    uint8_t *signature = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    size_t *signature_length = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+
+    if (key == NULL || input == NULL || signature == NULL || signature_length == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     size_t key_len = in[0].len;
-
-    const uint8_t *input = in[1].data;
     size_t input_len = in[1].len;
-
-    uint8_t *signature = out[0].data;
     size_t signature_size = out[0].len;
-    size_t *signature_length = out[1].data;
 
     if (key_len != ECC_P256_PRIV_KEY_SIZE ||
         signature_size < ECC_P256_SIGNATURE_SIZE)
@@ -121,18 +137,21 @@ tee_status_t ecc_p256r1_sign_message(io_pack_in_t *in, size_t in_len, io_pack_ou
 
 tee_status_t ecc_p256r1_verify_hash(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len < 3)
+    if (in_len != 3)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    const uint8_t *key = in[0].data;
+    uint8_t *key = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *hash = cmse_check_address_range(in[1].data, in[1].len, CMSE_NONSECURE);
+    uint8_t *signature = cmse_check_address_range(in[2].data, in[2].len, CMSE_NONSECURE);
+
+    if (key == NULL || hash == NULL || signature == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     size_t key_len = in[0].len;
-
-    const uint8_t *hash = in[1].data;
     size_t hash_len = in[1].len;
-
-    const uint8_t *signature = in[2].data;
     size_t signature_len = in[2].len;
 
     if (key_len != ECC_P256_PUB_KEY_SIZE ||
@@ -148,23 +167,27 @@ tee_status_t ecc_p256r1_verify_hash(io_pack_in_t *in, size_t in_len, io_pack_out
     }
 
     (void) out;
+    (void) out_len;
     return TEE_SUCCESS;
 }
 
 tee_status_t ecc_p256r1_verify_message(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len < 3)
+    if (in_len != 3)
     {
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    const uint8_t *key = in[0].data;
+    uint8_t *key = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *input = cmse_check_address_range(in[1].data, in[1].len, CMSE_NONSECURE);
+    uint8_t *signature = cmse_check_address_range(in[2].data, in[2].len, CMSE_NONSECURE);
+
+    if (key == NULL || input == NULL || signature == NULL) {
+        return TEE_ERROR_CORRUPTION_DETECTED;
+    }
+
     size_t key_len = in[0].len;
-
-    const uint8_t *input = in[1].data;
     size_t input_len = in[1].len;
-
-    const uint8_t *signature = in[2].data;
     size_t signature_len = in[2].len;
 
     if (key_len != ECC_P256_PUB_KEY_SIZE ||
@@ -179,5 +202,6 @@ tee_status_t ecc_p256r1_verify_message(io_pack_in_t *in, size_t in_len, io_pack_
     }
 
     (void) out;
+    (void) out_len;
     return TEE_SUCCESS;
 }

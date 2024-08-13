@@ -6,11 +6,9 @@ tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
                                               size_t *priv_key_buffer_length,
                                               size_t *pub_key_buffer_length)
 {
-    io_pack_out_t out[4] = {
+    io_pack_out_t out[2] = {
         { .data = priv_key_buffer, .len = *priv_key_buffer_length },
-        { .data = pub_key_buffer, .len = *pub_key_buffer_length },
-        { .data = priv_key_buffer_length, .len = sizeof(size_t) },
-        { .data = pub_key_buffer_length, .len = sizeof(size_t) }
+        { .data = pub_key_buffer, .len = *pub_key_buffer_length }
     };
 
     io_operation_info_t info = {
