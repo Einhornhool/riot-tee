@@ -33,7 +33,6 @@ set(FLAGS
 set(SOURCES
     src/main.c
     src/ns_entry.c
-    # src/non_secure_entry.c
     ${NRFXPATH}/mdk/system_nrf9160.c
 )
 
@@ -102,7 +101,6 @@ target_link_options(${EXECUTABLE_NAME}
     "-T${PROJECT_SOURCE_DIR}/ld/common.ld"
     "-Wl,--cmse-implib"
     "-Wl,--out-implib=${NSC_LIB}"
-    "-Wl,--gc-sections"
     "-Wl,-Map=${MAP_FILE}"
     "--specs=nosys.specs"
     "-L${NRFXPATH}/mdk/"

@@ -29,7 +29,9 @@ extern "C" {
 #include "tee_status.h"
 #include "tee_secure_io.h"
 
-tee_status_t ecc_generate_p256r1_key_pair(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
+tee_status_t ecc_p256r1_generate_key_pair(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
+
+tee_status_t ecc_p256r1_import_key_pair(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
 
 tee_status_t ecc_p256r1_sign_hash(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len);
 

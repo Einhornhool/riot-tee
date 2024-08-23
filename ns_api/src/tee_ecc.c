@@ -3,12 +3,12 @@
 
 tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
                                               uint8_t *pub_key_buffer,
-                                              size_t *priv_key_buffer_length,
-                                              size_t *pub_key_buffer_length)
+                                              size_t priv_key_buffer_length,
+                                              size_t pub_key_buffer_length)
 {
     io_pack_out_t out[2] = {
-        { .data = priv_key_buffer, .len = *priv_key_buffer_length },
-        { .data = pub_key_buffer, .len = *pub_key_buffer_length }
+        { .data = priv_key_buffer, .len = priv_key_buffer_length },
+        { .data = pub_key_buffer, .len = pub_key_buffer_length }
     };
 
     io_operation_info_t info = {
@@ -18,6 +18,30 @@ tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
     };
 
     return ns_entry(&info, NULL, out);
+}
+
+tee_status_t tee_import_ecc_p256r1_key_pair(const uint8_t *key_in, size_t key_in_len,
+                                            uint8_t *privkey_buffer,
+                                            uint8_t *pubkey_buffer,
+                                            size_t privkey_buffer_length,
+                                            size_t pubkey_buffer_length)
+{
+    io_pack_in_t in[1] = {
+        { .data = key_in, .len = key_in_len },
+    };
+
+    io_pack_out_t out[2] = {
+        { .data = privkey_buffer, .len = privkey_buffer_length },
+        { .data = pubkey_buffer, .len = pubkey_buffer_length }
+    };
+
+    io_operation_info_t info = {
+        .operation = TEE_ECC_P256_IMPORT,
+        .in_len = sizeof(in)/sizeof(io_pack_in_t),
+        .out_len = sizeof(out)/sizeof(io_pack_out_t)
+    };
+
+    return ns_entry(&info, in, out);
 }
 
 tee_status_t tee_ecc_p256r1_sign_hash(const uint8_t *key_buffer, size_t key_buffer_size,

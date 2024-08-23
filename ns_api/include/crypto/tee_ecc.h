@@ -37,8 +37,14 @@ extern "C" {
 
 tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
                                               uint8_t *pub_key_buffer,
-                                              size_t *priv_key_buffer_length,
-                                              size_t *pub_key_buffer_length);
+                                              size_t priv_key_buffer_length,
+                                              size_t pub_key_buffer_length);
+
+tee_status_t tee_import_ecc_p256r1_key_pair(const uint8_t *key_in, size_t key_in_len,
+                                            uint8_t *privkey_buffer,
+                                            uint8_t *pubkey_buffer,
+                                            size_t privkey_buffer_length,
+                                            size_t pubkey_buffer_length);
 
 tee_status_t tee_ecc_p256r1_sign_hash(const uint8_t *key_buffer, size_t key_buffer_size,
                                       const uint8_t *hash, size_t hash_length,
