@@ -1,26 +1,32 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.30)
 
 project(riot-tee VERSION 0.1 LANGUAGES C ASM)
 
-# if (NOT DEFINED RIOT_BUILD)
-set(TOOLCHAINPATH /home/lena/apps/gcc-arm-11.2-2022.02-x86_64-arm-none-eabi/bin)
+if (NOT DEFINED TOOLCHAINPATH)
+    message(WARNING "Using default toolchain, may lead to errors.")
+    message(WARNING "Recommended: Arm GNU 11.2-2022.02")
+    set(TOOLCHAINPATH       /usr/bin)
+endif()
 
 set(CMAKE_C_COMPILER    ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 set(CMAKE_ASM_COMPILER  ${TOOLCHAINPATH}/arm-none-eabi-gcc)
-# endif()
 
-if (NOT DEFINED NRFXPATH)
-    set(NRFXPATH        "${CMAKE_SOURCE_DIR}/3rd-party/nrfx")
-endif()
+set(DEPENDENCIES_PATH   "${CMAKE_BINARY_DIR}/_deps")
+set(CRYPTOSERVICE_PATH      ${RIOT_CRYPTOSERVICE})
+set(CRYPTOSERVICE_RIOT_LIBS ${CRYPTOSERVICE_PATH}/libs/RIOT)
 
-if (NOT DEFINED CMSISPATH)
-    set(CMSISPATH       "${CMAKE_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
-endif()
+set(NRFXPATH            "${DEPENDENCIES_PATH}/nrfx-src")
+set(CMSISPATH           "${DEPENDENCIES_PATH}/cmsis_5-src/CMSIS")
+set(OBERONPATH          "${DEPENDENCIES_PATH}/sdk-nrfxlib-src/crypto/nrf_oberon")
 
-set(LINKER_SCRIPT   "${CMAKE_SOURCE_DIR}/ld/common.ld")
-set(NSC_LIB         "${CMAKE_BINARY_DIR}/nsc_lib.o")
-set(MAP_FILE        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
-set(CMAKE_BUILD_TYPE "Debug")
+# set(NRFXPATH            "${PROJECT_SOURCE_DIR}/3rd-party/nrfx")
+# set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
+# set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
+
+set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
+set(NSC_LIB             "${CMAKE_BINARY_DIR}/nsc_lib.o")
+set(MAP_FILE            "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
+set(CMAKE_BUILD_TYPE    "Debug")
 
 set(FLAGS
     "-mcpu=cortex-m33"
@@ -37,7 +43,6 @@ set(SOURCES
 )
 
 set(ASM_SOURCES
-    # ${NRFXPATH}/mdk/gcc_startup_nrf9160.S
     target/nrf9160/startup.S
 )
 
@@ -51,15 +56,24 @@ set_source_files_properties(${ASM_SOURCES}
 
 set(EXECUTABLE_NAME ${PROJECT_NAME}.elf)
 
+include(${CMAKE_SOURCE_DIR}/cmake/extensions.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake)
+
 # Add source files to executable
 add_executable(${EXECUTABLE_NAME}
     ${SOURCES}
     ${ASM_SOURCES}
 )
 
+add_subdirectory(ns_api)
+add_subdirectory(src/crypto)
+add_subdirectory(src/rot)
+add_subdirectory(src/random)
+
 # Add include dirs to executable
 target_include_directories(${EXECUTABLE_NAME}
     PUBLIC
+    ${CRYPTOSERVICE_PATH}/api
     ns_api/include
     ns_api/include/crypto
     ns_api/include/rot
@@ -83,16 +97,12 @@ target_compile_definitions(${EXECUTABLE_NAME}
     FLOAT_ABI_HARD
 )
 
-# Add crypto code as a library
-add_subdirectory(ns_api)
-add_subdirectory(src/crypto)
-add_subdirectory(src/rot)
-add_subdirectory(src/random)
-# add_subdirectory(extern)
-
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
     ${FLAGS}
     "-mcmse"
+    "-Wall"
+    "-Werror"
+    "-Wpedantic"
 )
 
 target_link_options(${EXECUTABLE_NAME}
@@ -117,3 +127,29 @@ target_link_libraries(${EXECUTABLE_NAME}
     "-Wl,--end-group"
 )
 
+# RIOT can set RIOT_INSTALL_PREFIX to decide where API header files are installed
+# Default will be the build directory
+# if (NOT DEFINED RIOT_INSTALL_PREFIX)
+#   set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
+# else()
+#   set(CMAKE_INSTALL_PREFIX ${RIOT_INSTALL_PREFIX})
+# endif()
+
+# # Declare an interface library to export only headers for linking with other implementations
+# add_library(cys_interface INTERFACE)
+# target_sources(cys_interface
+#   PUBLIC
+#   FILE_SET HEADERS
+#   BASE_DIRS ${PROJECT_SOURCE_DIR}/api
+#   FILES
+#     ${PROJECT_SOURCE_DIR}/api/CYS/common.h
+#     ${PROJECT_SOURCE_DIR}/api/CYS/protected_key.h
+#     ${PROJECT_SOURCE_DIR}/api/CYS/unprotected.h
+# )
+
+# # Add install target to install headers at a specified location
+# install(
+#   TARGETS cys_interface
+#   FILE_SET HEADERS
+#   DESTINATION api
+# )
