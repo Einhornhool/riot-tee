@@ -1,5 +1,3 @@
-set(OBERONPATH      "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
-
 set(LIBRARY_NAME "riot_tee_crypto")
 
 add_library(${LIBRARY_NAME}
@@ -17,6 +15,7 @@ target_include_directories(${LIBRARY_NAME}
     ${PROJECT_SOURCE_DIR}/src/rot
     ${PROJECT_SOURCE_DIR}/src
     ${OBERONPATH}/include
+    ${CRYPTOSERVICE_PATH}/api
 )
 target_compile_definitions(${LIBRARY_NAME}
     PUBLIC
@@ -27,6 +26,9 @@ target_compile_definitions(${LIBRARY_NAME}
 target_compile_options(${LIBRARY_NAME}
     PUBLIC
     ${FLAGS}
+    "-Wall"
+    "-Werror"
+    "-Wpedantic"
 )
 
 target_link_options(${LIBRARY_NAME}

@@ -4,6 +4,10 @@
 #include "random.h"
 #include "ocrypto_aes_ecb.h"
 
+#include "CYS/common.h"
+#include "CYS/protected_key.h"
+#include "ocb.h"
+
 #define ROT_AES_128_KEY_BYTES   (16)
 #define ROT_KEY_AES_ID          (3)
 #define ROT_KEY_P256_PRIVATE_ID (4)
@@ -56,6 +60,31 @@ tee_status_t rot_try_generate_aes_key(void)
     NRF_KMU_S->SELECTKEYSLOT = 0;
 
     return TEE_SUCCESS;
+}
+
+CYS_error_t rot_encrypt_key_ocb(uint8_t *key_in, size_t key_in_size, size_t tag_size, uint8_t *nonce, size_t nonce_size, uint8_t *cipher_out)
+{
+    /* Select key slot 3 */
+    NRF_KMU_S->SELECTKEYSLOT = ROT_KEY_AES_ID;
+
+    /* Check if permissions are set correctly */
+    if (NRF_UICR_S->KEYSLOT.CONFIG[ROT_KEY_AES_ID-1].PERM != ROT_KEY_AES_PERM) {
+        return CYS_ERROR_GENERIC_ERROR;
+    }
+
+    cipher_t cipher;
+    cipher_init(&cipher, CIPHER_AES, (uint8_t *)NRF_UICR_S->KEYSLOT.KEY[ROT_KEY_AES_ID-1].VALUE, ROT_AES_128_KEY_BYTES);
+
+    int32_t result = cipher_encrypt_ocb(&cipher, NULL, 0, tag_size, nonce, nonce_size, key_in, key_in_size, cipher_out);
+
+    /* Deselect key slot 3 */
+    NRF_KMU_S->SELECTKEYSLOT = 0;
+
+    if(result == CYS_PROT_P256_KEY_SIZE + CYS_PROT_SEAL_TAG_SIZE) {
+        return CYS_SUCCESS;
+    }
+
+    return CYS_ERROR_GENERIC_ERROR;
 }
 
 tee_status_t rot_encrypt_key(uint8_t *key_in, size_t key_in_size, uint8_t *cipher_out, size_t cipher_out_size)

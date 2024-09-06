@@ -34,6 +34,7 @@ extern "C" {
 #define TEE_ECC_P256_SIGN_MSG       (0x24)
 #define TEE_ECC_P256_VERIFY_HASH    (0x25)
 #define TEE_ECC_P256_VERIFY_MSG     (0x26)
+#define CYS_PROT_P256_GENERATE      (0x27)
 
 tee_status_t tee_generate_ecc_p256r1_key_pair(uint8_t *priv_key_buffer,
                                               uint8_t *pub_key_buffer,

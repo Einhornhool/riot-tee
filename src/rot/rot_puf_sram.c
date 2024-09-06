@@ -25,7 +25,7 @@ extern uint32_t RAM_START;
 /**
  * @brief   Attribute for memory sections required by SRAM PUF
  */
-#define PUF_SRAM_ATTRIBUTES __attribute__((used, section(".puf")))
+#define PUF_SRAM_ATTRIBUTES __attribute__((used, section(".preserve")))
 
 /**
  * @brief SRAM length considered for seeding

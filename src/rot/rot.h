@@ -23,6 +23,7 @@ extern "C" {
 
 #include "tee_status.h"
 #include "tee_secure_io.h"
+#include "CYS/common.h"
 
 #define KEYSTORAGE_PLATFORM_AES_KEY     (0x1)
 #define KEYSTORAGE_PLATFORM_P256_KEY    (0x2)
@@ -71,6 +72,8 @@ tee_status_t rot_try_generate_p256_key(void);
  *          TEE_ERROR_NOT_PERMITTED
  */
 tee_status_t rot_encrypt_key(uint8_t *key_in, size_t key_in_size, uint8_t *cipher_out, size_t cipher_out_size);
+
+CYS_error_t rot_encrypt_key_ocb(uint8_t *key_in, size_t key_in_size, size_t tag_size, uint8_t *nonce, size_t nonce_size, uint8_t *cipher_out);
 
 /**
  * @brief   Decrypt key data with the platform AES key

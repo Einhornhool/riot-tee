@@ -59,8 +59,8 @@ tee_status_t hashes_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_t
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    tee_hash_ctx_t *ctx = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *input = cmse_check_address_range(in[1].data, in[1].len, CMSE_NONSECURE);
+    tee_hash_ctx_t *ctx = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *input = cmse_check_address_range((void *)in[1].data, in[1].len, CMSE_NONSECURE);
 
     if (ctx == NULL || input == NULL) {
         return TEE_ERROR_CORRUPTION_DETECTED;
@@ -82,15 +82,13 @@ tee_status_t hashes_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_t
         return TEE_ERROR_INVALID_ARGUMENT;
     }
 
-    tee_hash_ctx_t *ctx = cmse_check_address_range(in[0].data, in[0].len, CMSE_NONSECURE);
+    tee_hash_ctx_t *ctx = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
     uint8_t *hash_out = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
     size_t *hash_len_out = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
 
     if (ctx == NULL || hash_out == NULL || hash_len_out == NULL) {
         return TEE_ERROR_CORRUPTION_DETECTED;
     }
-
-    size_t hash_out_size = out[0].len;
 
     ocrypto_sha256_final(&sha256_ctx[*ctx], hash_out);
 

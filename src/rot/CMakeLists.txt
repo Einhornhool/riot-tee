@@ -1,10 +1,12 @@
 set(LIBRARY_NAME "riot_tee_rot")
-set(OBERONPATH   "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 add_library(${LIBRARY_NAME}
     STATIC
     rot.c
     rot_puf_sram.c
+    ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/ciphers.c
+    ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/aes.c
+    ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/modes/ocb.c
 )
 
 target_include_directories(${LIBRARY_NAME}
@@ -16,6 +18,10 @@ target_include_directories(${LIBRARY_NAME}
     ${NRFXPATH}/mdk
     ${CMSISPATH}/Core/Include
     ${OBERONPATH}/include
+    ${CRYPTOSERVICE_PATH}/api
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include/crypto
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include/crypto/modes
 )
 
 target_compile_options(${LIBRARY_NAME}

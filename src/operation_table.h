@@ -37,12 +37,13 @@ static const tee_operation_t tee_operation_table[] = {
     [TEE_HASH_SHA256_SETUP]         = hashes_sha256_setup,
     [TEE_HASH_SHA256_UPDATE]        = hashes_sha256_update,
     [TEE_HASH_SHA256_FINISH]        = hashes_sha256_finish,
-    [TEE_ECC_P256_IMPORT]           = ecc_p256r1_import_key_pair,
+    [TEE_ECC_P256_IMPORT]           = NULL,
     [TEE_ECC_P256_GENERATE]         = ecc_p256r1_generate_key_pair,
     [TEE_ECC_P256_SIGN_HASH]        = ecc_p256r1_sign_hash,
     [TEE_ECC_P256_SIGN_MSG]         = ecc_p256r1_sign_message,
     [TEE_ECC_P256_VERIFY_HASH]      = ecc_p256r1_verify_hash,
-    [TEE_ECC_P256_VERIFY_MSG]       = ecc_p256r1_verify_message
+    [TEE_ECC_P256_VERIFY_MSG]       = ecc_p256r1_verify_message,
+    [CYS_PROT_P256_GENERATE]        = tee_prot_p256_generate
 };
 
 #define TEE_OPERATION_TABLE_SIZE (sizeof(tee_operation_table)/sizeof(tee_operation_t))

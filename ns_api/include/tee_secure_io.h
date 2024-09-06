@@ -21,7 +21,9 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
 #include <stddef.h>
+#include "tee_status.h"
 
 typedef struct {
     const void* data;
@@ -34,9 +36,9 @@ typedef struct {
 } io_pack_out_t;
 
 typedef struct {
-    int32_t operation;
-    size_t in_len;
-    size_t out_len;
+    const int32_t operation;
+    const size_t in_len;
+    const size_t out_len;
 } io_operation_info_t;
 
 extern tee_status_t ns_entry(io_operation_info_t *op_info,

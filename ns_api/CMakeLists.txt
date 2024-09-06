@@ -5,12 +5,14 @@ add_library(${LIBRARY_NAME}
     src/tee_hashes.c
     src/tee_random.c
     src/tee_ecc.c
+    src/cys_protected_key.c
 )
 
 target_include_directories(${LIBRARY_NAME}
     PUBLIC
     include
     include/crypto
+    ${CRYPTOSERVICE_PATH}/api
 )
 
 target_compile_options(${LIBRARY_NAME}

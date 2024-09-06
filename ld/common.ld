@@ -32,9 +32,10 @@ SECTIONS
       . = ALIGN(32);
   } > FLASH_NSC
 
-  .stack (NOLOAD):
-  {
-    KEEP (*(.puf))
-    . = ALIGN(8);
-  } > RAM
+  .preserve (NOLOAD) : {
+		PROVIDE(__preserve_start__ = .);
+		KEEP(*(SORT_BY_NAME(.preserve.*)))
+		KEEP(*(.preserve))
+		PROVIDE(__preserve_end__ = .);
+	} > RAM
 }
