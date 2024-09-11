@@ -21,9 +21,9 @@
 extern "C" {
 #endif
 
-#include "tee_status.h"
 #include "tee_secure_io.h"
 #include "CYS/common.h"
+#include "CYS/sealed_key.h"
 
 #define KEYSTORAGE_PLATFORM_AES_KEY     (0x1)
 #define KEYSTORAGE_PLATFORM_P256_KEY    (0x2)
@@ -39,10 +39,10 @@ extern "C" {
  *
  *          Skips if the key already exists.
  *
- * @return  TEE_SUCCESS
- *          TEE_ERROR_ALREADY_EXISTS
+ * @return  CYS_SUCCESS
+ *          CYS_ERROR_ALREADY_EXISTS
  */
-tee_status_t rot_try_generate_aes_key(void);
+CYS_error_t tee_rot_try_generate_aes_key(void);
 
 /**
  * @brief   Try to generate a new platform ECC P256 key
@@ -55,55 +55,49 @@ tee_status_t rot_try_generate_aes_key(void);
  *
  *          Skips if the key already exists.
  *
- * @return  TEE_SUCCESS
- *          TEE_ERROR_ALREADY_EXISTS
+ * @return  CYS_SUCCESS
+ *          CYS_ERROR_ALREADY_EXISTS
  */
-tee_status_t rot_try_generate_p256_key(void);
+CYS_error_t rot_try_generate_p256_key(void);
 
 /**
- * @brief   Encrypt key data with the platform AES key
+ * @brief   Encrypt a key with the RoT ECC P256 key
  *
- * @param[in]   key_in          Pointer to plain key to encrypt
- * @param       key_in_size     Size of plain key
- * @param[out]  cipher_out      Pointer to buffer to store encrypted key
- * @param       cipher_out_size Size of buffer to store encrypted key
- *
- * @return  TEE_SUCCESS
- *          TEE_ERROR_NOT_PERMITTED
+ * @param   key_in
+ * @param   key_in_size
+ * @param   tag_size
+ * @param   nonce
+ * @param   nonce_size
+ * @param   cipher_out
+ * @return  CYS_error_t
  */
-tee_status_t rot_encrypt_key(uint8_t *key_in, size_t key_in_size, uint8_t *cipher_out, size_t cipher_out_size);
-
-CYS_error_t rot_encrypt_key_ocb(uint8_t *key_in, size_t key_in_size, size_t tag_size, uint8_t *nonce, size_t nonce_size, uint8_t *cipher_out);
+CYS_error_t tee_rot_encrypt_key_ocb(uint8_t *key_in, CYS_PROT_ecc_p256_key_t *sealed_key);
 
 /**
- * @brief   Decrypt key data with the platform AES key
+ * @brief   Decrypt a key with the RoT ECC P256 key
  *
- * @param[in]   key_in          Pointer to encrypted key
- * @param       key_in_size     Size of encrypted key
- * @param[out]  key_out         Pointer to buffer to store decrypted key
- * @param       key_out_size    Size of buffer to store decrypted key
- * @return  TEE_SUCCESS
- *          TEE_ERROR_NOT_PERMITTED
+ * @param   sealed_key
+ * @param   key_out
+ * @return  CYS_error_t
  */
-tee_status_t rot_decrypt_key(uint8_t *key_in, size_t key_in_size, uint8_t *key_out, size_t key_out_size);
-
+CYS_error_t tee_rot_decrypt_key_ocb(CYS_PROT_ecc_p256_key_t *sealed_key, uint8_t *key_out);
 /**
  * @brief   Sign some data with the RoT ECC P256 key
  *
  * @param   in
  * @param   out
- * @return tee_status_t
+ * @return CYS_error_t
  */
-tee_status_t rot_sign(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
+CYS_error_t rot_sign(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
 
 /**
  * @brief   Generate the public key of the RoT ECC P256 key
  *
  * @param   in
  * @param   out
- * @return tee_status_t
+ * @return CYS_error_t
  */
-tee_status_t rot_export_public_key(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
+CYS_error_t rot_export_public_key(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
 
 /**
  * @brief Builds hash from uninitialized SRAM and stores it to use as random seed

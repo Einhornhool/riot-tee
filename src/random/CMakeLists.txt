@@ -1,19 +1,19 @@
 set(LIBRARY_NAME "riot_tee_random")
-set(OBERONPATH   "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 add_library(${LIBRARY_NAME}
     STATIC
-    random.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/tee_random.c
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/random/shaxprng.c
 )
 
 target_include_directories(${LIBRARY_NAME}
     PRIVATE
-    ${CMAKE_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/ns_api/include
-    ${PROJECT_SOURCE_DIR}/ns_api/include/key_storage
+    ${PROJECT_SOURCE_DIR}/api
+    ${PROJECT_SOURCE_DIR}/src/entry
     ${NRFXPATH}/mdk
     ${CMSISPATH}/Core/Include
-    ${OBERONPATH}/include
+    ${CRYPTOSERVICE_PATH}/api
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include
 )
 
 target_compile_options(${LIBRARY_NAME}

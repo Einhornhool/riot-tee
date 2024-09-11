@@ -2,21 +2,24 @@ set(LIBRARY_NAME "riot_tee_crypto")
 
 add_library(${LIBRARY_NAME}
     STATIC
-    hashes.c
-    ecc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/tee_ecc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/tee_hashes.c
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha2xx_common.c
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha256.c
 )
 
 target_include_directories(${LIBRARY_NAME}
     PRIVATE
     ${CMAKE_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/ns_api/include
-    ${PROJECT_SOURCE_DIR}/ns_api/include/crypto
+    ${PROJECT_SOURCE_DIR}/api
+    ${PROJECT_SOURCE_DIR}/src/entry
     ${PROJECT_SOURCE_DIR}/src/random
     ${PROJECT_SOURCE_DIR}/src/rot
-    ${PROJECT_SOURCE_DIR}/src
     ${OBERONPATH}/include
     ${CRYPTOSERVICE_PATH}/api
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include
 )
+
 target_compile_definitions(${LIBRARY_NAME}
     PUBLIC
     NRF9160_XXAA

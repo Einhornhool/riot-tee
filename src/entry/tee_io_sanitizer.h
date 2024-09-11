@@ -11,15 +11,15 @@
  * @defgroup       <name> <description>
  * @{
  *
- * @file        io_sanitizer.h
+ * @file        tee_io_sanitizer.h
  * @brief
  *
  * @author      Lena Boeckmann <lena.boeckmann@haw-hamburg.de>
  *
  */
 
-#ifndef IO_SANITIZER_H
-#define IO_SANITIZER_H
+#ifndef TEE_IO_SANITIZER_H
+#define TEE_IO_SANITIZER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +29,7 @@ extern "C" {
 #include <arm_cmse.h>
 
 /**
- * @brief Needs to be defined as 18
+ * @brief Needs to be defined as 18 for address range check
  *
  * Source: https://arm-software.github.io/acle/cmse/cmse.html#address-range-check-intrinsic-for-cmse
  */
@@ -39,5 +39,5 @@ extern "C" {
 }
 #endif
 
-#endif /* IO_SANITIZER_H */
+#endif /* TEE_IO_SANITIZER_H */
 /** @} */
