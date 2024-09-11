@@ -11,17 +11,17 @@ endif()
 set(CMAKE_C_COMPILER    ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 set(CMAKE_ASM_COMPILER  ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 
-set(DEPENDENCIES_PATH   "${CMAKE_BINARY_DIR}/_deps")
+set(DEPENDENCIES_PATH       "${CMAKE_BINARY_DIR}/_deps")
 set(CRYPTOSERVICE_PATH      ${RIOT_CRYPTOSERVICE})
 set(CRYPTOSERVICE_RIOT_LIBS ${CRYPTOSERVICE_PATH}/libs/RIOT)
 
-set(NRFXPATH            "${DEPENDENCIES_PATH}/nrfx-src")
-set(CMSISPATH           "${DEPENDENCIES_PATH}/cmsis_5-src/CMSIS")
-set(OBERONPATH          "${DEPENDENCIES_PATH}/sdk-nrfxlib-src/crypto/nrf_oberon")
+# set(NRFXPATH            "${DEPENDENCIES_PATH}/nrfx-src")
+# set(CMSISPATH           "${DEPENDENCIES_PATH}/cmsis_5-src/CMSIS")
+# set(OBERONPATH          "${DEPENDENCIES_PATH}/sdk-nrfxlib-src/crypto/nrf_oberon")
 
-# set(NRFXPATH            "${PROJECT_SOURCE_DIR}/3rd-party/nrfx")
-# set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
-# set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
+set(NRFXPATH            "${PROJECT_SOURCE_DIR}/3rd-party/nrfx")
+set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
+set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
 set(NSC_LIB             "${CMAKE_BINARY_DIR}/nsc_lib.o")
@@ -38,7 +38,7 @@ set(FLAGS
 
 set(SOURCES
     src/main.c
-    src/ns_entry.c
+    src/entry/tee_secure_entry.c
     ${NRFXPATH}/mdk/system_nrf9160.c
 )
 
@@ -56,7 +56,6 @@ set_source_files_properties(${ASM_SOURCES}
 
 set(EXECUTABLE_NAME ${PROJECT_NAME}.elf)
 
-include(${CMAKE_SOURCE_DIR}/cmake/extensions.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake)
 
 # Add source files to executable
@@ -65,7 +64,7 @@ add_executable(${EXECUTABLE_NAME}
     ${ASM_SOURCES}
 )
 
-add_subdirectory(ns_api)
+add_subdirectory(api)
 add_subdirectory(src/crypto)
 add_subdirectory(src/rot)
 add_subdirectory(src/random)
@@ -74,14 +73,13 @@ add_subdirectory(src/random)
 target_include_directories(${EXECUTABLE_NAME}
     PUBLIC
     ${CRYPTOSERVICE_PATH}/api
-    ns_api/include
-    ns_api/include/crypto
-    ns_api/include/rot
+    ${CRYPTOSERVICE_PATH}/include
+    api/include
     target/nrf9160
-    src/rot
     src/crypto
+    src/entry
     src/random
-    src
+    src/rot
     ${CMSISPATH}/Core/Include
     ${NRFXPATH}
     ${NRFXPATH}/mdk
@@ -119,7 +117,7 @@ target_link_options(${EXECUTABLE_NAME}
 
 target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC
-    riot_tee_ns_api
+    riot_tee_api
     riot_tee_crypto
     riot_tee_rot
     riot_tee_random
@@ -143,7 +141,7 @@ target_link_libraries(${EXECUTABLE_NAME}
 #   BASE_DIRS ${PROJECT_SOURCE_DIR}/api
 #   FILES
 #     ${PROJECT_SOURCE_DIR}/api/CYS/common.h
-#     ${PROJECT_SOURCE_DIR}/api/CYS/protected_key.h
+#     ${PROJECT_SOURCE_DIR}/api/CYS/sealed_key.h
 #     ${PROJECT_SOURCE_DIR}/api/CYS/unprotected.h
 # )
 
