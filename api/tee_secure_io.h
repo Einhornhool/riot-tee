@@ -23,7 +23,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stddef.h>
-#include "tee_status.h"
+#include "CYS/common.h"
 
 typedef struct {
     const void* data;
@@ -41,9 +41,9 @@ typedef struct {
     const size_t out_len;
 } io_operation_info_t;
 
-extern tee_status_t ns_entry(io_operation_info_t *op_info,
-                             io_pack_in_t *in,
-                             io_pack_out_t *out);
+extern CYS_error_t tee_secure_entry(io_operation_info_t *op_info,
+                                    io_pack_in_t *in,
+                                    io_pack_out_t *out);
 
 #ifdef __cplusplus
 }

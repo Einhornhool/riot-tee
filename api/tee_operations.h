@@ -1,0 +1,18 @@
+#ifndef TEE_OPERATIONS_H
+#define TEE_OPERATIONS_H
+
+#define TEE_RANDOM_GENERATE         (0x0F)
+
+#define TEE_HASH_SHA256_SETUP       (0x11)
+#define TEE_HASH_SHA256_UPDATE      (0x12)
+#define TEE_HASH_SHA256_FINISH      (0x13)
+
+#define TEE_ECC_P256_IMPORT         (0x21)
+#define TEE_ECC_P256_GENERATE       (0x22)
+#define TEE_ECC_P256_SIGN_HASH      (0x23)
+#define TEE_ECC_P256_VERIFY_HASH    (0x24)
+
+#define TEE_PROT_ECC_P256_GENERATE  (0x27)
+#define TEE_PROT_ECC_P256_SIGN      (0x28)
+
+#endif /* TEE_OPERATIONS_H */
