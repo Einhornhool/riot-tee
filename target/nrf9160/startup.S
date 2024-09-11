@@ -29,7 +29,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 #define __STARTUP_CONFIG_STACK_ALIGNEMENT 3
 #endif
 #endif
-    .extern rot_get_random_seed
+    .extern puf_generate
     .section .stack
 #if defined(__STARTUP_CONFIG)
     .align __STARTUP_CONFIG_STACK_ALIGNEMENT
@@ -343,7 +343,9 @@ __isr_vector:
     .globl Reset_Handler
     .type Reset_Handler, %function
 Reset_Handler:
-    bl rot_get_random_seed
+    ldr r0, =RAM_START_NS
+    ldr r1, =RAM_SIZE_NS
+    bl puf_generate
 
 /* Loop to copy data from read only memory to RAM.
  * The ranges of copy from/to are specified by following symbols:
