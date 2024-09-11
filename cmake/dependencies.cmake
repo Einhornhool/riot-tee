@@ -13,25 +13,31 @@ set(FETCHCONTENT_QUIET OFF)
 #         -DCMAKE_TOOLCHAIN_FILE=cmake/armGNU.cmake
 # )
 
-FetchContent_Declare(
-    cmsis_5
-    GIT_REPOSITORY  https://github.com/ARM-software/CMSIS_5.git
-    GIT_TAG         5.9.0
-)
+# FetchContent_Declare(
+#     cmsis_5
+#     GIT_REPOSITORY  https://github.com/ARM-software/CMSIS_5.git
+#     GIT_TAG         5.9.0
+# )
 
-FetchContent_Declare(
-    nrfx
-    GIT_REPOSITORY  https://github.com/NordicSemiconductor/nrfx.git
-    GIT_TAG         v3.5.0
-)
+# FetchContent_Declare(
+#     nrfx
+#     GIT_REPOSITORY  https://github.com/NordicSemiconductor/nrfx.git
+#     GIT_TAG         v3.5.0
+# )
 
-FetchContent_Declare(
-    sdk-nrfxlib
-    GIT_REPOSITORY  https://github.com/nrfconnect/sdk-nrfxlib.git
-    GIT_TAG         v2.7.0
-)
+# FetchContent_Declare(
+#     sdk-nrfxlib
+#     GIT_REPOSITORY  https://github.com/nrfconnect/sdk-nrfxlib.git
+#     GIT_TAG         v2.7.0
+# )
 
-FetchContent_MakeAvailable(cmsis_5)
-FetchContent_MakeAvailable(nrfx)
-FetchContent_MakeAvailable(sdk-nrfxlib)
+# FetchContent_MakeAvailable(cmsis_5)
+# FetchContent_MakeAvailable(nrfx)
+# FetchContent_MakeAvailable(sdk-nrfxlib)
 
+# Required by dependency sdk-nrfxlib
+function(add_subdirectory_ifdef feature_toggle source_dir)
+  if(${${feature_toggle}})
+    add_subdirectory(${source_dir} ${ARGN})
+  endif()
+endfunction()
