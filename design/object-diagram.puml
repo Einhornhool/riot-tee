@@ -1,104 +1,139 @@
 @startuml
-
-namespace ns_api.crypto {
-    entity hashes {
-        tee_hashes_sha256_setup
-        tee_hashes_sha256_update
-        tee_hashes_sha256_finish
+namespace api #LightYellow {
+    entity CYS_hashes {
+        CYS_hash_sha256_setup
+        CYS_hash_sha256_update
+        CYS_hash_sha256_finish
     }
-    entity ecc {
-        tee_ecc_p256_import_key
-        tee_ecc_p256_generate_key
+    entity CYS_ecc {
+        CYS_PROT_ecc_p256_generate
+        CYS_PROT_ecc_p256_seal
+        CYS_PROT_ecc_p256_derive
+        CYS_PROT_ecc_p256_sign
+        CYS_ecc_p256_generate
+        CYS_ecc_p256_sign
+        CYS_ecc_p256_verify
+    }
+    entity CYS_cipher {
+        CYS_cipher_aes_128_import_key
+        CYS_cipher_aes_128_ecb
+    }
+}
+
+namespace api {
+    entity CYS_random {
+        CYS_random_generate
+    }
+}
+
+namespace entry #LightYellow {
+    entity Entry {
+        tee_secure_entry
+    }
+
+    entity Operations {
+        tee_operation_table
+    }
+}
+
+api.CYS_hashes ---> Entry::tee_secure_entry
+api.CYS_ecc ---> Entry::tee_secure_entry
+api.CYS_cipher ---> Entry::tee_secure_entry
+
+api.CYS_random ---> Entry::tee_secure_entry
+
+Entry --> Operations
+
+namespace CryptoService #LightBlue{
+    entity sram_puf {
+        puf_generate
+        puf_init
+    }
+
+    entity riot_hashes {
+        sha256_setup
+        sha256_update
+        sha256_finish
+    }
+
+    entity riot_cipher {
+        cipher_encrypt_ocb
+        cipher_decrypt_ocb
+    }
+
+    entity riot_random {
+        random_init
+        random_init_by_array
+        random_bytes
+    }
+
+    entity micro_ecc {
+        uECC_make_key
+        uECC_shared_secret
+        uECC_sign
+        uECC_sign_deterministic
+        uECC_verify
+    }
+}
+
+namespace src #LightYellow {}
+
+namespace src.crypto {
+    entity tee_hashes {
+        tee_hash_sha256_setup
+        tee_hash_sha256_update
+        tee_hash_sha256_finish
+    }
+    entity tee_ecc {
+        tee_prot_ecc_p256_generate
+        tee_prot_ecc_p256_seal
+        tee_prot_ecc_p256_derive
+        tee_prot_ecc_p256_sign
+        tee_ecc_p256_generate
+        tee_ecc_p256_derive
         tee_ecc_p256_sign
         tee_ecc_p256_verify
     }
-    entity cipher {
-        tee_cipher_aes_128_import_key
-        tee_cipher_aes_128_ecb
-    }
-}
-
-namespace ns_api.random {
-    entity random {
-        tee_random_bytes
-        tee_random_uint32
-    }
-}
-
-namespace ns_api.platform {
-    entity platform_service {
-        platform_sign
-        platform_export_public_key
-    }
-}
-
-namespace nsc {
-    entity Entry {
-        ns_entry
-    }
-}
-
-ns_api.crypto.hashes ---> Entry::ns_entry
-ns_api.crypto.ecc ---> Entry::ns_entry
-ns_api.crypto.cipher ---> Entry::ns_entry
-
-ns_api.random.random ---> Entry::ns_entry
-
-ns_api.platform.platform_service  ---> Entry::ns_entry
-
-namespace secure.crypto {
-    entity hashes {
-        tee_sha256_setup
-        tee_sha256_update
-        tee_sha256_finish
-    }
-    entity ecc {
-        tee_p256_import_key
-        tee_p256_generate_key
-        tee_p256_sign
-        tee_p256_verify
-    }
-    entity cipher {
+    entity tee_cipher {
         tee_aes_128_import_key
         tee_aes_128_ecb
     }
 }
 
-namespace secure.rot {
-    entity API {
-        rot_gen_aes_key
-        rot_gen_p256_key
-        rot_encrypt_key
-        rot_decrypt_key
+namespace src.rot {
+    entity tee_rot {
+        rot_try_generate_aes_key
+        rot_try_generate_ecc_p256_key
+        rot_encrypt_key_ocb
+        rot_decrypt_key_ocb
         rot_sign
         rot_export_public_key
-        rot_get_random_seed
-        rot_init_random_with_seed
     }
 }
 
-namespace secure.random {
-    entity API {
-        random_init
-        random_init_by_array
-        random_bytes
-        random_uint32
+namespace src.random {
+    entity tee_random {
+        tee_random_generate
     }
 }
 
-namespace secure.oberon {
+' namespace src.oberon {
 
-}
+' }
 
-Entry ---> secure.crypto.hashes
-Entry ---> secure.crypto.ecc
-Entry ---> secure.crypto.cipher
+Operations ---> src.crypto.tee_hashes
+Operations ---> src.crypto.tee_ecc
+Operations ---> src.crypto.tee_cipher
 
-secure.crypto.cipher ---> secure.rot.API
-secure.crypto.ecc ---> secure.rot.API
-secure.crypto --> secure.oberon
-secure.crypto ---> secure.random.API
-
-secure.random <- secure.rot.API
+' src.crypto.tee_cipher ---> src.rot.tee_rot
+src.crypto.tee_ecc ---> src.rot.tee_rot
+src.crypto.tee_ecc ---> CryptoService.micro_ecc
+src.crypto.tee_ecc ---> CryptoService.riot_random
+src.crypto.tee_hashes ---> CryptoService.riot_hashes
+src.crypto.tee_cipher ---> CryptoService.riot_cipher
+src.random.tee_random ---> CryptoService.riot_random
+src.rot.tee_rot ---> CryptoService.riot_random
+src.rot.tee_rot ---> CryptoService.riot_cipher
+' src.crypto --> src.oberon
 
 @enduml

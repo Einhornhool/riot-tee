@@ -37,7 +37,7 @@ node "RIOT" {
 }
 package SecureFwEntry {
     map sfw_entry {
-        ns_entry => ecalls
+        tee_secure_entry => ecalls
     }
 }
 
