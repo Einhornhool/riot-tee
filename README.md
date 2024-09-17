@@ -9,3 +9,8 @@ Secure Firmware for [RIOT OS](https://github.com/RIOT-OS/RIOT), for platforms wi
 Currently only usable on nRF9160.
 
 ![design](out/design/object-diagram/object-diagram.png)
+
+# Dependencies
+## CryptoService API and Library
+- Access currently restricted
+- https://github.com/LP-HAW/CryptoService/tree/feature/nrf9160dk-target-integration
