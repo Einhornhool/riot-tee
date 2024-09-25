@@ -41,6 +41,46 @@ int cc310_aes_init(cipher_context_t *context, const uint8_t *key, uint8_t keySiz
     return CIPHER_INIT_SUCCESS;
 }
 
+static int cc310_aes_encrypt_decrypt_with_root_key(const uint8_t *input, size_t input_len,
+                uint8_t *output, size_t output_len, int mode)
+{
+    /* Enable CRYPTOCELL subsystem */
+    TEE_CRYPTOCELL->ENABLE =  CRYPTOCELL_ENABLE_ENABLE_Enabled;
+
+    /* Enable engine and DMA clock */
+    TEE_CC_MISC->AES_CLK = TEE_CC_MISC_AES_CLK_ENABLE_Enable;
+    TEE_CC_MISC->DMA_CLK = TEE_CC_MISC_DMA_CLK_ENABLE_Enable;
+
+    TEE_CC_AES->AES_CONTROL = mode;
+
+    /* Wait until crypto engine is Idle  */
+    while (TEE_CC_CTL->CRYPTO_BUSY == TEE_CC_CTL_CRYPTO_BUSY_STATUS_Busy) { }
+
+    TEE_CC_DOUT->DOUT_SW_RESET = 1;
+    TEE_CC_AES->AES_SW_RESET = 1;
+
+    /* Select HW Key */
+    TEE_CC_HOST_RGF->HOST_CRYPTOKEY_SEL = 0;
+    TEE_CC_AES->AES_SK = 1;
+
+    /* Configure AES as cryptographic flow */
+    TEE_CC_CTL->CRYPTO_CTL = TEE_CC_CTL_CRYPTO_CTL_MODE_AESActive;
+
+    /* Configure DMA output destination address */
+    TEE_CC_DOUT->DST_MEM_ADDR = (uint32_t) output;
+    TEE_CC_DOUT->DST_MEM_SIZE = (uint32_t) output_len;
+
+    /* Configure DMA input source address to start the cryptographic operation */
+    TEE_CC_DIN->SRC_MEM_ADDR = (uint32_t) input;
+    TEE_CC_DIN->SRC_MEM_SIZE = (uint32_t) input_len;
+
+    /* Wait on DOUT DMA interrupt */
+    while(!(TEE_CC_HOST_RGF->IRR & TEE_CC_HOST_RGF_IRR_DOUT_TO_MEM_INT_Msk)) { }
+
+    TEE_CC_AES->AES_SW_RESET = 1;
+    TEE_CRYPTOCELL->ENABLE = ~CRYPTOCELL_ENABLE_ENABLE_Enabled;
+}
+
 int cc310_aes_encrypt_block(const cipher_context_t *context, const uint8_t *plain_block,
                 uint8_t *cipher_block)
 {
