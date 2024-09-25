@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.30)
 
 project(riot-tee VERSION 0.1 LANGUAGES C ASM)
 
+set(RIOT_TEE_CIPHER_AES_HW True)
+
 if (NOT DEFINED TOOLCHAINPATH)
     message(WARNING "Using default toolchain, may lead to errors.")
     message(WARNING "Recommended: Arm GNU 11.2-2022.02")
@@ -21,6 +23,7 @@ set(CRYPTOSERVICE_RIOT_LIBS ${CRYPTOSERVICE_PATH}/libs/RIOT)
 
 set(NRFXPATH            "${PROJECT_SOURCE_DIR}/3rd-party/nrfx")
 set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
+set(CMSISDEVPATH        "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/Device/ARM/ARMCM33/Include")
 set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
@@ -80,6 +83,7 @@ target_include_directories(${EXECUTABLE_NAME}
     src/entry
     src/random
     src/rot
+    ${CMSISDEVPATH}
     ${CMSISPATH}/Core/Include
     ${NRFXPATH}
     ${NRFXPATH}/mdk
