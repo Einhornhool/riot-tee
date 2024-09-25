@@ -22,7 +22,7 @@ CYS_error_t tee_cipher_aes_128_ecb_encrypt(io_pack_in_t *in, size_t in_len, io_p
     size_t plain_len = in[1].len;
     size_t cipher_len = out[0].len;
 
-    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, NULL, plain, plain_len, cipher, cipher_len, CC_AES_ECB_ENCRYPT);
+    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, NULL, plain, plain_len, cipher, cipher_len, TEE_CC_AES_ECB_ENCRYPT);
 }
 
 CYS_error_t tee_cipher_aes_128_ecb_decrypt(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -42,7 +42,7 @@ CYS_error_t tee_cipher_aes_128_ecb_decrypt(io_pack_in_t *in, size_t in_len, io_p
     size_t cipher_len = in[1].len;
     size_t plain_len = out[0].len;
 
-    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, NULL, cipher, cipher_len, plain, plain_len, CC_AES_ECB_DECRYPT);
+    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, NULL, cipher, cipher_len, plain, plain_len, TEE_CC_AES_ECB_DECRYPT);
 }
 
 CYS_error_t tee_cipher_aes_128_cbc_encrypt(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -63,7 +63,7 @@ CYS_error_t tee_cipher_aes_128_cbc_encrypt(io_pack_in_t *in, size_t in_len, io_p
     size_t plain_len = in[2].len;
     size_t cipher_len = out[0].len;
 
-    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, (uint32_t *)iv, plain, plain_len, cipher, cipher_len, CC_AES_CBC_ENCRYPT);
+    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, (uint32_t *)iv, plain, plain_len, cipher, cipher_len, TEE_CC_AES_CBC_ENCRYPT);
 }
 
 CYS_error_t tee_cipher_aes_128_cbc_decrypt(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -84,5 +84,5 @@ CYS_error_t tee_cipher_aes_128_cbc_decrypt(io_pack_in_t *in, size_t in_len, io_p
     size_t cipher_len = in[2].len;
     size_t plain_len = out[0].len;
 
-    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, (uint32_t *)iv, cipher, cipher_len, plain, plain_len, CC_AES_CBC_DECRYPT);
+    return cc310_aes_128_encrypt_decrypt((uint32_t *)key, (uint32_t *)iv, cipher, cipher_len, plain, plain_len, TEE_CC_AES_CBC_DECRYPT);
 }

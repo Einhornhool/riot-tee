@@ -30,6 +30,8 @@
 #include "CYS/puf.h"
 #include "CYS/common.h"
 
+#include "cc310_driver/cc310_entropy.h"
+#include "random.h"
 #include "tee_rot.h"
 
 extern unsigned int FLASH_START_NS;
@@ -94,10 +96,12 @@ int main(void)
     /* Raise NS exception priority to 0x80 to prevent preemption of secure fault exceptions */
     SCB->AIRCR |= SCB_AIRCR_PRIS_Msk;
 
-    /* Initialize the random number generator with SRAM PUF */
-    puf_init();
+    /* Initialize the random number generator with HW RNG */
+    uint32_t rng_seed[NRF_CC_RNG_OUTPUT_LEN/4];
+    CYS_error_t status = cc310_rng_get_entropy(rng_seed, sizeof(rng_seed));
+    random_init_by_array(rng_seed, NRF_CC_RNG_OUTPUT_LEN);
 
-    CYS_error_t status = tee_rot_try_generate_aes_key();
+    status = tee_rot_try_generate_aes_key();
     if (status != CYS_SUCCESS && status != CYS_ERROR_ALREADY_EXISTS) {
         puts("AES Platform key generation failed");
     }

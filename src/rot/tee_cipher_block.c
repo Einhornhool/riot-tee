@@ -44,7 +44,7 @@ int cc310_aes_init(cipher_context_t *context, const uint8_t *key, uint8_t keySiz
 int cc310_aes_encrypt_block(const cipher_context_t *context, const uint8_t *plain_block,
                 uint8_t *cipher_block)
 {
-    CYS_error_t ret = cc310_aes_128_encrypt_decrypt((uint32_t *)context->context, NULL, (uint8_t *)plain_block, AES_BLOCK_SIZE, cipher_block, AES_BLOCK_SIZE, CC_AES_ECB_ENCRYPT);
+    CYS_error_t ret = cc310_aes_128_encrypt_decrypt((uint32_t *)context->context, NULL, (uint8_t *)plain_block, AES_BLOCK_SIZE, cipher_block, AES_BLOCK_SIZE, TEE_CC_AES_ECB_ENCRYPT);
 
     if (ret != CYS_SUCCESS) {
         return CIPHER_ERR_ENC_FAILED;
@@ -56,7 +56,7 @@ int cc310_aes_encrypt_block(const cipher_context_t *context, const uint8_t *plai
 int cc310_aes_decrypt_block(const cipher_context_t *context, const uint8_t *cipher_block,
                 uint8_t *plain_block)
 {
-    CYS_error_t ret = cc310_aes_128_encrypt_decrypt((uint32_t *)context->context, NULL, (uint8_t *)cipher_block, AES_BLOCK_SIZE, plain_block, AES_BLOCK_SIZE, CC_AES_ECB_DECRYPT);
+    CYS_error_t ret = cc310_aes_128_encrypt_decrypt((uint32_t *)context->context, NULL, (uint8_t *)cipher_block, AES_BLOCK_SIZE, plain_block, AES_BLOCK_SIZE, TEE_CC_AES_ECB_DECRYPT);
 
     if (ret != CYS_SUCCESS) {
         return CIPHER_ERR_DEC_FAILED;

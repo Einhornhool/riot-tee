@@ -31,11 +31,4 @@ SECTIONS
       *(.gnu.sgstubs*)
       . = ALIGN(32);
   } > FLASH_NSC
-
-  .preserve (NOLOAD) : {
-		PROVIDE(__preserve_start__ = .);
-		KEEP(*(SORT_BY_NAME(.preserve.*)))
-		KEEP(*(.preserve))
-		PROVIDE(__preserve_end__ = .);
-	} > RAM
 }

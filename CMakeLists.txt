@@ -44,11 +44,12 @@ set(FLAGS
 set(SOURCES
     src/main.c
     src/entry/tee_secure_entry.c
+    ${TARGET_DIR}/cc310_driver/cc310_entropy.c
     ${NRFXPATH}/mdk/system_nrf9160.c
 )
 
 set(ASM_SOURCES
-    target/nrf9160/startup.S
+    ${NRFXPATH}/mdk/gcc_startup_nrf9160.S
 )
 
 set_source_files_properties(${ASM_SOURCES}
@@ -79,8 +80,9 @@ target_include_directories(${EXECUTABLE_NAME}
     PUBLIC
     ${CRYPTOSERVICE_PATH}/api
     ${CRYPTOSERVICE_PATH}/include
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include
     api/include
-    target/nrf9160
+    ${TARGET_DIR}
     src/crypto
     src/entry
     src/random
