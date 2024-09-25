@@ -17,11 +17,11 @@ CYS_error_t cc310_rng_get_entropy(uint32_t *buf, size_t len)
     /* Configure sampling rate between consecutive bits */
     do {
         TEE_CC_RNG->RNG_CLK = TEE_CC_RNG_RNG_CLK_ENABLE_Enable;
-        TEE_CC_RNG->SAMPLE_CNT = NRF_FICR_S->TRNG90B.ROSC1;
-    } while ( TEE_CC_RNG->SAMPLE_CNT != NRF_FICR_S->TRNG90B.ROSC1 );
+        TEE_CC_RNG->SAMPLE_CNT = NRF_FICR_S->TRNG90B.ROSC2;
+    } while ( TEE_CC_RNG->SAMPLE_CNT != NRF_FICR_S->TRNG90B.ROSC2 );
 
     /* Configure ROSC length */
-    TEE_CC_RNG->TRNG_CONFIG = TEE_CC_RNG_TRNG_CONFIG_ROSC_LEN_ROSC1;
+    TEE_CC_RNG->TRNG_CONFIG = TEE_CC_RNG_TRNG_CONFIG_ROSC_LEN_ROSC2;
 
     /* Enable noise source */
     TEE_CC_RNG->NOISE_SOURCE = TEE_CC_RNG_NOISE_SOURCE_ENABLE_Enabled;

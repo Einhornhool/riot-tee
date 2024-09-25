@@ -221,7 +221,7 @@ static TEE_CC_RNG_Type *TEE_CC_RNG              = ((TEE_CC_RNG_Type *) TEE_CC_RN
 
 #define TEE_CC_RNG_RNG_SW_RESET_RESET_Enable    (1UL)
 
-#define TEE_CC_RNG_TRNG_CONFIG_ROSC_LEN_ROSC1   (0x8fc) /* Read this value from the registers */
+#define TEE_CC_RNG_TRNG_CONFIG_ROSC_LEN_ROSC2   (1UL << 1)
 #define TEE_CC_RNG_NOISE_SOURCE_ENABLE_Enabled  (1UL)
 
 #define TEE_CC_CTL_CRYPTO_BUSY_STATUS_Busy      (1UL)
