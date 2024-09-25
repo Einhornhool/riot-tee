@@ -14,6 +14,7 @@ set(CMAKE_C_COMPILER    ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 set(CMAKE_ASM_COMPILER  ${TOOLCHAINPATH}/arm-none-eabi-gcc)
 
 set(DEPENDENCIES_PATH       "${CMAKE_BINARY_DIR}/_deps")
+set(CRYPTOSERVICE_ECC_PATH  ${RIOT_CRYPTOSERVICE_ECC})
 set(CRYPTOSERVICE_PATH      ${RIOT_CRYPTOSERVICE})
 set(CRYPTOSERVICE_RIOT_LIBS ${CRYPTOSERVICE_PATH}/libs/RIOT)
 
@@ -26,7 +27,7 @@ set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
 set(CMSISDEVPATH        "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/Device/ARM/ARMCM33/Include")
 set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
-set(TARGET_DIR   "${PROJECT_SOURCE_DIR}/target/nrf9160")
+set(TARGET_DIR          "${PROJECT_SOURCE_DIR}/target/nrf9160")
 
 set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
 set(NSC_LIB             "${CMAKE_BINARY_DIR}/nsc_lib.o")

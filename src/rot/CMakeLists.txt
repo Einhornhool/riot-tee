@@ -3,12 +3,10 @@ set(LIBRARY_NAME "riot_tee_rot")
 add_library(${LIBRARY_NAME}
     STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_rot.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/cipher_block.c
-    ${TARGET_DIR}/cc310_driver/cc310_aes_128.c
     ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha2xx_common.c
     ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha256.c
     ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/ciphers.c
-    # ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/aes.c
+    ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/aes.c
     ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/modes/ocb.c
     ${CRYPTOSERVICE_PATH}/src/puf.c
 )

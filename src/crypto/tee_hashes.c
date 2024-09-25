@@ -16,7 +16,6 @@
 
 #include "CYS/common.h"
 #include "CYS/unprotected.h"
-#include "hashes/sha256.h"
 
 #include "tee_secure_io.h"
 #include "tee_io_sanitizer.h"
@@ -33,11 +32,9 @@ CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    sha256_init((sha256_context_t *)ctx);
-
     (void) in;
     (void) in_len;
-    return CYS_SUCCESS;
+    return CYS_hash_sha256_init(ctx);
 }
 
 CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -56,11 +53,9 @@ CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_
 
     size_t input_size = in[1].len;
 
-    sha256_update((sha256_context_t *)ctx, input, input_size);
-
     (void) out;
     (void) out_len;
-    return CYS_SUCCESS;
+    return CYS_hash_sha256_update(ctx, input, input_size);
 }
 
 CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -77,7 +72,5 @@ CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    sha256_final((sha256_context_t *)ctx, digest);
-
-    return CYS_SUCCESS;
+    return CYS_hash_sha256_finalize(ctx, digest);
 }
