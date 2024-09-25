@@ -7,9 +7,9 @@
 #include "CYS/sealed_key.h"
 
 #include "tee_rot.h"
+// #include "cc310_driver/cc310_aes_128.c"
 
 #define TEE_ROT_KEY_AES_ID          (3)
-#define TEE_ROT_KEY_P256_PRIVATE_ID (4)
 #define TEE_ROT_AES_128_KEY_BYTES   (16)
 
 /**
@@ -124,3 +124,4 @@ CYS_error_t tee_rot_decrypt_key_ocb(CYS_PROT_ecc_p256_key_t *sealed_key, uint8_t
 
     return CYS_SUCCESS;
 }
+
