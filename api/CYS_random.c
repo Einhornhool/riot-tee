@@ -3,11 +3,10 @@
 #include "tee_operations.h"
 #include "tee_secure_io.h"
 
-CYS_error_t CYS_random_generate(uint8_t *buffer, size_t size, size_t *len)
+CYS_error_t CYS_random_generate(uint8_t *buffer, size_t size)
 {
-    io_pack_out_t out[2] = {
+    io_pack_out_t out[1] = {
         { .data = buffer, .len = size },
-        { .data = len, .len = sizeof(size_t) }
     };
 
     io_operation_info_t info = {

@@ -24,6 +24,7 @@ extern "C" {
 #include "CYS/common.h"
 
 #include "tee_operations.h"
+#include "tee_cipher.h"
 #include "tee_hashes.h"
 #include "tee_random.h"
 #include "tee_ecc.h"
@@ -35,6 +36,8 @@ static const tee_operation_t tee_operation_table[] = {
     [TEE_HASH_SHA256_SETUP]         = tee_hash_sha256_setup,
     [TEE_HASH_SHA256_UPDATE]        = tee_hash_sha256_update,
     [TEE_HASH_SHA256_FINISH]        = tee_hash_sha256_finish,
+    [TEE_CIPHER_AES_128_ENCRYPT]    = tee_cipher_aes_128_encrypt,
+    [TEE_CIPHER_AES_128_DECRYPT]    = tee_cipher_aes_128_decrypt,
     [TEE_ECC_P256_IMPORT]           = NULL,
     [TEE_ECC_P256_GENERATE]         = tee_ecc_p256_generate,
     [TEE_ECC_P256_SIGN_HASH]        = tee_ecc_p256_sign_hash,

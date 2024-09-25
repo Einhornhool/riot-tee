@@ -2,6 +2,7 @@ set(LIBRARY_NAME "riot_tee_api")
 
 add_library(${LIBRARY_NAME}
     STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/CYS_cipher.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CYS_ecc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CYS_hashes.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CYS_random.c
