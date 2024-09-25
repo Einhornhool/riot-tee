@@ -14,3 +14,15 @@ Currently only usable on nRF9160.
 ## CryptoService API and Library
 - Access currently restricted
 - https://github.com/LP-HAW/CryptoService/tree/feature/nrf9160dk-target-integration
+
+## CMSIS 5
+- Provides drivers for Arm Cortex-M devices
+- https://github.com/ARM-software/CMSIS_5.git
+
+## NRFX Lib
+- Provides drivers and peripherals for Nordic microcontrollers
+- https://github.com/NordicSemiconductor/nrfx.git
+
+## SDK-NRFXLIB
+- Provides crypto libraries for Nordic microcontrollers
+- https://github.com/nrfconnect/sdk-nrfxlib.git
