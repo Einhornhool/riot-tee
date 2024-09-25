@@ -1,6 +1,5 @@
 set(LIBRARY_NAME "riot_tee_crypto")
 set(CMSISDEVPATH "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/Device/ARM/ARMCM33/Include")
-set(TARGET_DIR   "${PROJECT_SOURCE_DIR}/target/nrf9160")
 
 add_library(${LIBRARY_NAME}
     STATIC

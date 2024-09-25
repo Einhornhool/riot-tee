@@ -26,6 +26,8 @@ set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
 set(CMSISDEVPATH        "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/Device/ARM/ARMCM33/Include")
 set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
+set(TARGET_DIR   "${PROJECT_SOURCE_DIR}/target/nrf9160")
+
 set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
 set(NSC_LIB             "${CMAKE_BINARY_DIR}/nsc_lib.o")
 set(MAP_FILE            "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
