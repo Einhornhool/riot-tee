@@ -28,16 +28,18 @@
 
 CYS_error_t tee_generate_random_bytes(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len != 0 || out_len != 2)
+    if (in_len != 0 || out_len != 1)
     {
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
     uint8_t *buffer = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
     size_t size = out[0].len;
-    size_t *len = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+
+    if (buffer == NULL) {
+        return CYS_ERROR_CORRUPTION_DETECTED;
+    }
 
     random_bytes(buffer, size);
-    *len = size;
     return CYS_SUCCESS;
 }

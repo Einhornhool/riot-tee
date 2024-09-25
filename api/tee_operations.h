@@ -7,6 +7,9 @@
 #define TEE_HASH_SHA256_UPDATE      (0x12)
 #define TEE_HASH_SHA256_FINISH      (0x13)
 
+#define TEE_CIPHER_AES_128_ENCRYPT  (0x14)
+#define TEE_CIPHER_AES_128_DECRYPT  (0x15)
+
 #define TEE_ECC_P256_IMPORT         (0x21)
 #define TEE_ECC_P256_GENERATE       (0x22)
 #define TEE_ECC_P256_SIGN_HASH      (0x23)
