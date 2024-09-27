@@ -12,6 +12,12 @@
 #define TEE_ROT_KEY_AES_ID          (3)
 #define TEE_ROT_AES_128_KEY_BYTES   (16)
 
+// Key:
+// [0x0] = 0x3,
+// [0x1] = 0xfa3d7d67,
+// [0x2] = 0xcabb9d39,
+// [0x3] = 0x7a18dd34
+
 /**
  * @brief   Permissions for AES key.
  *
