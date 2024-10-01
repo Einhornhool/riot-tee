@@ -4,6 +4,8 @@ add_library(${LIBRARY_NAME}
     STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_random.c
     ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/random/shaxprng.c
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha2xx_common.c
+    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha256.c
 )
 
 target_include_directories(${LIBRARY_NAME}

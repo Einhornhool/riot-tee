@@ -7,8 +7,7 @@ add_library(${LIBRARY_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_ecc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_hashes.c
     ${TARGET_DIR}/cc310_driver/cc310_aes_128.c
-    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha2xx_common.c
-    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha256.c
+    ${TARGET_DIR}/cc310_driver/cc310_hash_sha.c
 )
 
 target_include_directories(${LIBRARY_NAME}
