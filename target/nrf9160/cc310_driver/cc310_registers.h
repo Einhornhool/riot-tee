@@ -214,6 +214,47 @@ static __attribute__ ((unused))NRF_CC_RNG_Type *NRF_CC_RNG=          ((NRF_CC_RN
 #define CC_HASH_HASH_CONTROL_MODE_SHA256    (0x00000002UL)
 #define CC_HASH_HASH_CONTROL_MODE_SHA224    (0x0000000AUL)
 
+<<<<<<< Updated upstream
 #define CC_HOST_RGF_IRR_MEM_TO_DIN_INT_Msk      (1UL << 6)
 #define CC_HOST_RGF_IRR_DOUT_TO_MEM_INT_Msk     (1UL << 7)
 #endif /* CRYPTOCELL_H */
+=======
+__attribute__ ((unused))
+static TEE_CC_MISC_Type *TEE_CC_MISC            = ((TEE_CC_MISC_Type *) TEE_CC_MISC_BASE);
+
+__attribute__ ((unused))
+static TEE_CC_HOST_RGF_Type *TEE_CC_HOST_RGF    = ((TEE_CC_HOST_RGF_Type *) TEE_CC_HOST_RGF_BASE);
+
+__attribute__ ((unused))
+static TEE_CC_RNG_Type *TEE_CC_RNG              = ((TEE_CC_RNG_Type *) TEE_CC_RNG_BASE);
+
+#define TEE_CC_MISC_AES_CLK_ENABLE_Enable       (1UL)
+#define TEE_CC_MISC_HASH_CLK_ENABLE_Enable      (1UL)
+#define TEE_CC_MISC_DMA_CLK_ENABLE_Enable       (1UL)
+#define TEE_CC_RNG_RNG_CLK_ENABLE_Enable        (1UL)
+
+#define TEE_CC_RNG_RNG_SW_RESET_RESET_Enable    (1UL)
+
+#define TEE_CC_RNG_TRNG_CONFIG_ROSC_LEN_ROSC2   (1UL << 1)
+#define TEE_CC_RNG_NOISE_SOURCE_ENABLE_Enabled  (1UL)
+
+#define TEE_CC_CTL_CRYPTO_BUSY_STATUS_Busy      (1UL)
+#define TEE_CC_CTL_HASH_BUSY_STATUS_Busy        (1UL)
+
+#define TEE_CC_CTL_CRYPTO_CTL_MODE_AESActive    (0x00000001UL)
+#define TEE_CC_CTL_CRYPTO_CTL_MODE_HashActive   (0x00000007UL)
+
+#define TEE_CC_AES_ECB_ENCRYPT                  (0x00000000UL)
+#define TEE_CC_AES_ECB_DECRYPT                  (0x00000001UL)
+
+#define TEE_CC_AES_CBC_ENCRYPT                  (0x00000100UL)
+#define TEE_CC_AES_CBC_DECRYPT                  (0x00000101UL)
+
+#define TEE_CC_HASH_HASH_CONTROL_MODE_SHA256    (0x00000002UL)
+#define TEE_CC_HASH_HASH_CONTROL_MODE_SHA224    (0x0000000AUL)
+
+#define TEE_CC_HOST_RGF_IRR_MEM_TO_DIN_INT_Msk      (1UL << 6)
+#define TEE_CC_HOST_RGF_IRR_DOUT_TO_MEM_INT_Msk     (1UL << 7)
+#define TEE_CC_RNG_RNG_ISR_EHR_VALID_INT_Msk        (1UL << 0)
+#endif /* CC310_REGISTERS_H */
+>>>>>>> Stashed changes

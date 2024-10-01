@@ -18,7 +18,7 @@ typedef struct {
 
 CYS_error_t cc310_hash_sha256_init(CYS_hash_sha256_ctx_t *ctx)
 {
-    sha2xx_context_t *sha256_ctx = (sha2xx_context_t *) ctx;
+    sha2xx_context_t *sha256_ctx = (sha2xx_context_t *) ctx->data;
 
     sha256_ctx->state[0] = SHA256_INIT[0];
     sha256_ctx->state[1] = SHA256_INIT[1];
@@ -34,62 +34,64 @@ CYS_error_t cc310_hash_sha256_init(CYS_hash_sha256_ctx_t *ctx)
 
 CYS_error_t cc310_hash_sha256_update(CYS_hash_sha256_ctx_t *ctx, uint8_t *input, size_t input_len)
 {
-    sha2xx_context_t *sha256_ctx = (sha2xx_context_t *) ctx;
+    sha2xx_context_t *sha256_ctx = (sha2xx_context_t *) ctx->data;
 
     if (input_len > 32) {
         return CYS_ERROR_NOT_SUPPORTED;
     }
 
     /* Enable CRYPTOCELL subsystem */
-    NRF_CRYPTOCELL->ENABLE = CRYPTOCELL_ENABLE_ENABLE_Enabled;
+    TEE_CRYPTOCELL->ENABLE = CRYPTOCELL_ENABLE_ENABLE_Enabled;
 
     /* Enable engine and DMA clock */
-    NRF_CC_MISC->HASH_CLK = CC_MISC_HASH_CLK_ENABLE_Enable;
-    NRF_CC_MISC->DMA_CLK = CC_MISC_DMA_CLK_ENABLE_Enable;
+    TEE_CC_MISC->HASH_CLK = TEE_CC_MISC_HASH_CLK_ENABLE_Enable;
+    TEE_CC_MISC->DMA_CLK = TEE_CC_MISC_DMA_CLK_ENABLE_Enable;
 
     /* Wait until hash engine is Idle  */
-    while (NRF_CC_CTL->HASH_BUSY == CC_CTL_HASH_BUSY_STATUS_Busy) {}
+    while (TEE_CC_CTL->HASH_BUSY == TEE_CC_CTL_HASH_BUSY_STATUS_Busy) {}
 
     /* Clear all interrupts */
-    NRF_CC_HOST_RGF->ICR = 0xFFFFFFFF;
+    TEE_CC_HOST_RGF->ICR = 0xFFFFFFFF;
 
     /* Configure HASH as cryptographic flow */
-    NRF_CC_CTL->CRYPTO_CTL = CC_CTL_CRYPTO_CTL_MODE_HashActive;
+    TEE_CC_CTL->CRYPTO_CTL = TEE_CC_CTL_CRYPTO_CTL_MODE_HashActive;
 
     /* Configure engine for SHA256 */
-    NRF_CC_HASH->HASH_CONTROL = CC_HASH_HASH_CONTROL_MODE_SHA256;
+    TEE_CC_HASH->HASH_CONTROL = TEE_CC_HASH_HASH_CONTROL_MODE_SHA256;
 
     /* Configure initial SHA256 values */
-    NRF_CC_HASH->HASH_H[7] = sha256_ctx->state[7];
-    NRF_CC_HASH->HASH_H[6] = sha256_ctx->state[6];
-    NRF_CC_HASH->HASH_H[5] = sha256_ctx->state[5];
-    NRF_CC_HASH->HASH_H[4] = sha256_ctx->state[4];
-    NRF_CC_HASH->HASH_H[3] = sha256_ctx->state[3];
-    NRF_CC_HASH->HASH_H[2] = sha256_ctx->state[2];
-    NRF_CC_HASH->HASH_H[1] = sha256_ctx->state[1];
-    NRF_CC_HASH->HASH_H[0] = sha256_ctx->state[0];
+    TEE_CC_HASH->HASH_H[7] = sha256_ctx->state[7];
+    TEE_CC_HASH->HASH_H[6] = sha256_ctx->state[6];
+    TEE_CC_HASH->HASH_H[5] = sha256_ctx->state[5];
+    TEE_CC_HASH->HASH_H[4] = sha256_ctx->state[4];
+    TEE_CC_HASH->HASH_H[3] = sha256_ctx->state[3];
+    TEE_CC_HASH->HASH_H[2] = sha256_ctx->state[2];
+    TEE_CC_HASH->HASH_H[1] = sha256_ctx->state[1];
+    TEE_CC_HASH->HASH_H[0] = sha256_ctx->state[0];
 
     /* Configure DMA input source address to start the cryptographic operation */
-    NRF_CC_DIN->SRC_MEM_ADDR = (uint32_t) input;
-    NRF_CC_DIN->SRC_MEM_SIZE = (uint32_t) input_len;
+    TEE_CC_DIN->SRC_MEM_ADDR = (uint32_t) input;
+    TEE_CC_DIN->SRC_MEM_SIZE = (uint32_t) input_len;
 
     /* Wait on DIN DMA interrupt indicating data has been fetched */
-    while(!(NRF_CC_HOST_RGF->IRR & CC_HOST_RGF_IRR_MEM_TO_DIN_INT_Msk)) {}
+    while(!(TEE_CC_HOST_RGF->IRR & TEE_CC_HOST_RGF_IRR_MEM_TO_DIN_INT_Msk)) {}
 
     /* Wait until hash engine is Idle */
-    while (NRF_CC_CTL->HASH_BUSY == CC_CTL_HASH_BUSY_STATUS_Busy) {}
+    while (TEE_CC_CTL->HASH_BUSY == TEE_CC_CTL_HASH_BUSY_STATUS_Busy) {}
 
-    sha256_ctx->state[0] = NRF_CC_HASH->HASH_H[0];
-    sha256_ctx->state[1] = NRF_CC_HASH->HASH_H[1];
-    sha256_ctx->state[2] = NRF_CC_HASH->HASH_H[2];
-    sha256_ctx->state[3] = NRF_CC_HASH->HASH_H[3];
-    sha256_ctx->state[4] = NRF_CC_HASH->HASH_H[4];
-    sha256_ctx->state[5] = NRF_CC_HASH->HASH_H[5];
-    sha256_ctx->state[6] = NRF_CC_HASH->HASH_H[6];
-    sha256_ctx->state[7] = NRF_CC_HASH->HASH_H[7];
+    sha256_ctx->state[0] = TEE_CC_HASH->HASH_H[0];
+    sha256_ctx->state[1] = TEE_CC_HASH->HASH_H[1];
+    sha256_ctx->state[2] = TEE_CC_HASH->HASH_H[2];
+    sha256_ctx->state[3] = TEE_CC_HASH->HASH_H[3];
+    sha256_ctx->state[4] = TEE_CC_HASH->HASH_H[4];
+    sha256_ctx->state[5] = TEE_CC_HASH->HASH_H[5];
+    sha256_ctx->state[6] = TEE_CC_HASH->HASH_H[6];
+    sha256_ctx->state[7] = TEE_CC_HASH->HASH_H[7];
 
     /* Disable CRYPTOCELL subsystem */
-    NRF_CRYPTOCELL->ENABLE = ~CRYPTOCELL_ENABLE_ENABLE_Enabled;
+    TEE_CC_HASH->HASH_SW_RESET = 1;
+    TEE_CC_DIN->DIN_SW_RESET = 1;
+    TEE_CRYPTOCELL->ENABLE = ~CRYPTOCELL_ENABLE_ENABLE_Enabled;
 
     return CYS_SUCCESS;
 }
