@@ -6,16 +6,10 @@ add_library(${LIBRARY_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_cipher.c
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_ecc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_hashes.c
-<<<<<<< Updated upstream
-    $<$<BOOL:${RIOT_TEE_CIPHER_AES_HW}>:cc310_driver/cc310_aes_128.c>
-    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha2xx_common.c
-    ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha256.c
-=======
     ${TARGET_DIR}/cc310_driver/cc310_aes_128.c
     ${TARGET_DIR}/cc310_driver/cc310_hash_sha.c
     # ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha2xx_common.c
     # ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/hashes/sha256.c
->>>>>>> Stashed changes
 )
 
 target_include_directories(${LIBRARY_NAME}
