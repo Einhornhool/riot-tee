@@ -6,7 +6,6 @@
 
 #include "tee_rot.h"
 
-#define TEE_ROT_KEY_AES_ID          (3)
 #define TEE_ROT_AES_128_KEY_BYTES   (16)
 
 /* This is for testing only! Ideally key should be set by an immutable bootloader or at least randomly generated! */
@@ -37,6 +36,7 @@ CYS_error_t tee_rot_try_generate_aes_key(void)
 CYS_error_t tee_rot_encrypt_key_ocb(uint8_t *key_in, CYS_PROT_ecc_p256_key_t *sealed_key)
 {
     cipher_t cipher = { 0 };
+    cipher.interface = CIPHER_AES;
 
     /* The hardware driver ignores the cipher context, so no need to initialize */
     int32_t result = cipher_encrypt_ocb(&cipher, NULL, 0, CYS_PROT_SEAL_TAG_SIZE, sealed_key->nonce, CYS_PROT_SEAL_NONCE_SIZE, key_in, CYS_PROT_ECC_P256_KEY_SIZE, sealed_key->private_key);
@@ -51,6 +51,7 @@ CYS_error_t tee_rot_encrypt_key_ocb(uint8_t *key_in, CYS_PROT_ecc_p256_key_t *se
 CYS_error_t tee_rot_decrypt_key_ocb(CYS_PROT_ecc_p256_key_t *sealed_key, uint8_t *key_out)
 {
     cipher_t cipher = { 0 };
+    cipher.interface = CIPHER_AES;
 
     /* The hardware driver ignores the cipher context, so no need to initialize */
     int32_t result = cipher_decrypt_ocb(&cipher, NULL, 0, CYS_PROT_SEAL_TAG_SIZE, sealed_key->nonce, CYS_PROT_SEAL_NONCE_SIZE, sealed_key->private_key, CYS_PROT_ECC_P256_KEY_SIZE+CYS_PROT_SEAL_TAG_SIZE, key_out);
