@@ -23,16 +23,38 @@ CYS_error_t CYS_PROT_ecc_p256_generate(CYS_PROT_ecc_p256_key_t *sealed_key, uint
 
 CYS_error_t CYS_PROT_ecc_p256_seal(const uint8_t *unsealed_key, CYS_PROT_ecc_p256_key_t *sealed_key)
 {
-    (void) unsealed_key;
-    (void) sealed_key;
-    return CYS_ERROR_NOT_SUPPORTED;
+    io_pack_in_t in[1] = {
+        { .data = unsealed_key, .len = CYS_ECC_P256_KEY_SIZE }
+    };
+
+    io_pack_out_t out[1] = {
+        { .data = sealed_key, .len = sizeof(CYS_PROT_ecc_p256_key_t) }
+    };
+
+    io_operation_info_t info = {
+        .operation = TEE_PROT_ECC_P256_SEAL,
+        .in_len = sizeof(in)/sizeof(io_pack_in_t),
+        .out_len = sizeof(out)/sizeof(io_pack_out_t)
+    };
+    return tee_secure_entry(&info, in, out);
 }
 
 CYS_error_t CYS_PROT_ecc_p256_derive(const CYS_PROT_ecc_p256_key_t *sealed_key, uint8_t *public_key)
 {
-    (void) sealed_key;
-    (void) public_key;
-    return CYS_ERROR_NOT_SUPPORTED;
+    io_pack_in_t in[1] = {
+        { .data = sealed_key, .len = sizeof(CYS_PROT_ecc_p256_key_t) }
+    };
+
+    io_pack_out_t out[1] = {
+        { .data = public_key, .len = CYS_PROT_ECC_P256_PUB_SIZE }
+    };
+
+    io_operation_info_t info = {
+        .operation = TEE_PROT_ECC_P256_DERIVE,
+        .in_len = sizeof(in)/sizeof(io_pack_in_t),
+        .out_len = sizeof(out)/sizeof(io_pack_out_t)
+    };
+    return tee_secure_entry(&info, in, out);
 }
 
 CYS_error_t CYS_PROT_ecc_p256_sign(const CYS_PROT_ecc_p256_key_t *key, const uint8_t *hash, size_t hash_len, uint8_t *signature)
@@ -74,9 +96,20 @@ CYS_error_t CYS_ecc_p256_generate(uint8_t *private_key, uint8_t *public_key)
 
 CYS_error_t CYS_ecc_p256_derive(const uint8_t *private_key, uint8_t *public_key)
 {
-    (void) private_key;
-    (void) public_key;
-    return CYS_ERROR_NOT_SUPPORTED;
+    io_pack_in_t in[1] = {
+        { .data = private_key, .len = CYS_ECC_P256_KEY_SIZE }
+    };
+
+    io_pack_out_t out[1] = {
+        { .data = public_key, .len = CYS_ECC_P256_PUB_SIZE }
+    };
+
+    io_operation_info_t info = {
+        .operation = TEE_ECC_P256_DERIVE,
+        .in_len = sizeof(in)/sizeof(io_pack_in_t),
+        .out_len = sizeof(out)/sizeof(io_pack_out_t)
+    };
+    return tee_secure_entry(&info, in, out);
 }
 
 CYS_error_t CYS_ecc_p256_sign(const uint8_t *private_key, const uint8_t *hash, size_t hash_len, uint8_t *signature)

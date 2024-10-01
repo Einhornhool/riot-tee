@@ -56,20 +56,50 @@ CYS_error_t tee_prot_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_
 
 CYS_error_t tee_prot_p256_seal(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    (void) in;
-    (void) in_len;
-    (void) out;
-    (void) out_len;
-    return CYS_ERROR_NOT_SUPPORTED;
+    if (in_len != 1 || out_len != 1) {
+        return CYS_ERROR_INVALID_ARGUMENT;
+    }
+
+    uint8_t *priv_key = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
+    CYS_PROT_ecc_p256_key_t *sealed_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+
+    if (priv_key == NULL || sealed_key == NULL) {
+        return CYS_ERROR_CORRUPTION_DETECTED;
+    }
+
+    random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce));
+
+    if (tee_rot_encrypt_key_ocb(priv_key, sealed_key)) {
+        return CYS_ERROR_GENERIC_ERROR;
+    }
+
+    return CYS_SUCCESS;
 }
 
 CYS_error_t tee_prot_p256_derive(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    (void) in;
-    (void) in_len;
-    (void) out;
-    (void) out_len;
-    return CYS_ERROR_NOT_SUPPORTED;
+    if (in_len != 1 || out_len != 1) {
+        return CYS_ERROR_INVALID_ARGUMENT;
+    }
+
+    CYS_PROT_ecc_p256_key_t *key = (CYS_PROT_ecc_p256_key_t *)cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+
+    if (key == NULL || pub_key == NULL) {
+        return CYS_ERROR_CORRUPTION_DETECTED;
+    }
+
+    uint8_t key_clear[TEE_ECC_P256_PRIV_KEY_SIZE];
+    if (tee_rot_decrypt_key_ocb(key, key_clear) < 0) {
+        return CYS_ERROR_GENERIC_ERROR;
+    }
+
+    pub_key[0] = 0x04;
+    if (ocrypto_ecdsa_p256_public_key(&pub_key[1], key_clear)) {
+        return CYS_ERROR_GENERIC_ERROR;
+    }
+
+    return CYS_SUCCESS;
 }
 
 CYS_error_t tee_prot_p256_sign(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -157,11 +187,23 @@ CYS_error_t tee_ecc_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_t
 
 CYS_error_t tee_ecc_p256_derive(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    (void) in;
-    (void) in_len;
-    (void) out;
-    (void) out_len;
-    return CYS_ERROR_NOT_SUPPORTED;
+    if (in_len != 1 || out_len != 1) {
+        return CYS_ERROR_INVALID_ARGUMENT;
+    }
+
+    uint8_t *priv_key = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+
+    if (priv_key == NULL || pub_key == NULL) {
+        return CYS_ERROR_CORRUPTION_DETECTED;
+    }
+
+    pub_key[0] = 0x04;
+    if (ocrypto_ecdsa_p256_public_key(&pub_key[1], priv_key)) {
+        return CYS_ERROR_GENERIC_ERROR;
+    }
+
+    return CYS_SUCCESS;
 }
 
 CYS_error_t tee_ecc_p256_sign_hash(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)

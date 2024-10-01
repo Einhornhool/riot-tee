@@ -12,12 +12,14 @@
 #define TEE_CIPHER_AES_128_ECB_ENCRYPT  (0x16)
 #define TEE_CIPHER_AES_128_ECB_DECRYPT  (0x17)
 
-#define TEE_ECC_P256_IMPORT         (0x21)
 #define TEE_ECC_P256_GENERATE       (0x22)
 #define TEE_ECC_P256_SIGN_HASH      (0x23)
 #define TEE_ECC_P256_VERIFY_HASH    (0x24)
+#define TEE_ECC_P256_DERIVE         (0x25)
 
 #define TEE_PROT_ECC_P256_GENERATE  (0x27)
 #define TEE_PROT_ECC_P256_SIGN      (0x28)
+#define TEE_PROT_ECC_P256_SEAL      (0x29)
+#define TEE_PROT_ECC_P256_DERIVE    (0x30)
 
 #endif /* TEE_OPERATIONS_H */

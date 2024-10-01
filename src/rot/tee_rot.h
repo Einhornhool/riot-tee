@@ -39,26 +39,13 @@ extern "C" {
  *
  *          Skips if the key already exists.
  *
+ * @warning For testing and development purposes, the current implementation
+ *          sets a hard coded test key. This is insecure and will be changed in the future.
+ *
  * @return  CYS_SUCCESS
  *          CYS_ERROR_ALREADY_EXISTS
  */
 CYS_error_t tee_rot_try_generate_aes_key(void);
-
-/**
- * @brief   Try to generate a new platform ECC P256 key
- *
- *          When booting a platform for the first time, this function generates
- *          a platform P256 key and stores it in a hardware key slot on the platform.
- *          Should be executed during secure side setup.
- *
- *          Key only becomes available after reset.
- *
- *          Skips if the key already exists.
- *
- * @return  CYS_SUCCESS
- *          CYS_ERROR_ALREADY_EXISTS
- */
-CYS_error_t rot_try_generate_p256_key(void);
 
 /**
  * @brief   Encrypt a key with the RoT ECC P256 key
@@ -98,11 +85,6 @@ CYS_error_t rot_sign(const io_pack_in_t *in, const size_t in_len, io_pack_out_t 
  * @return CYS_error_t
  */
 CYS_error_t rot_export_public_key(const io_pack_in_t *in, const size_t in_len, io_pack_out_t *out, const size_t out_len);
-
-/**
- * @brief Builds hash from uninitialized SRAM and stores it to use as random seed
- */
-void rot_get_random_seed(void);
 
 /**
  * @brief   Initializes the random number generator with the seed generated from SRAM
