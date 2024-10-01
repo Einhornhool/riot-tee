@@ -27,7 +27,6 @@
 #include "nrf_spu.h"
 #include "nrfx.h"
 
-#include "CYS/puf.h"
 #include "CYS/common.h"
 
 #include "cc310_driver/cc310_entropy.h"
