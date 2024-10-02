@@ -18,6 +18,10 @@ int cc310_aes_init(cipher_context_t *context, const uint8_t *key, uint8_t keySiz
     return CIPHER_INIT_SUCCESS;
 }
 
+/**
+ * @warning This is a rudimentary driver for a PoC and probably not implemented correctly.
+ *          Don't rely on this for anything security critical.
+ */
 static CYS_error_t cc310_aes_128_encrypt_decrypt_with_root_key(uint8_t *input, size_t input_len,
                 uint8_t *output, size_t output_len, int mode)
 {
