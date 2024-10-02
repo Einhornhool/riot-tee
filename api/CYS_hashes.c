@@ -1,4 +1,5 @@
 #include "CYS/common.h"
+#include "CYS/os_mutex.h"
 #include "CYS/unprotected.h"
 #include "tee_secure_io.h"
 #include "tee_operations.h"
@@ -15,7 +16,11 @@ CYS_error_t CYS_hash_sha256_init(CYS_hash_sha256_ctx_t *ctx)
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
 
-    return tee_secure_entry(&info, NULL, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, NULL, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_hash_sha256_update(CYS_hash_sha256_ctx_t *ctx, const uint8_t *data, size_t len)
@@ -31,7 +36,11 @@ CYS_error_t CYS_hash_sha256_update(CYS_hash_sha256_ctx_t *ctx, const uint8_t *da
         .out_len = 0
     };
 
-    return tee_secure_entry(&info, in, NULL);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, NULL);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_hash_sha256_finalize(CYS_hash_sha256_ctx_t *ctx, uint8_t *digest)
@@ -50,5 +59,9 @@ CYS_error_t CYS_hash_sha256_finalize(CYS_hash_sha256_ctx_t *ctx, uint8_t *digest
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }

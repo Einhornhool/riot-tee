@@ -1,4 +1,5 @@
 #include "CYS/common.h"
+#include "CYS/os_mutex.h"
 #include "CYS/sealed_key.h"
 #include "CYS/unprotected.h"
 #include "tee_secure_io.h"
@@ -18,7 +19,11 @@ CYS_error_t CYS_PROT_ecc_p256_generate(CYS_PROT_ecc_p256_key_t *sealed_key, uint
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
 
-    return tee_secure_entry(&info, NULL, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, NULL, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_PROT_ecc_p256_seal(const uint8_t *unsealed_key, CYS_PROT_ecc_p256_key_t *sealed_key)
@@ -36,7 +41,12 @@ CYS_error_t CYS_PROT_ecc_p256_seal(const uint8_t *unsealed_key, CYS_PROT_ecc_p25
         .in_len = sizeof(in)/sizeof(io_pack_in_t),
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
-    return tee_secure_entry(&info, in, out);
+
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_PROT_ecc_p256_derive(const CYS_PROT_ecc_p256_key_t *sealed_key, uint8_t *public_key)
@@ -54,7 +64,11 @@ CYS_error_t CYS_PROT_ecc_p256_derive(const CYS_PROT_ecc_p256_key_t *sealed_key, 
         .in_len = sizeof(in)/sizeof(io_pack_in_t),
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_PROT_ecc_p256_sign(const CYS_PROT_ecc_p256_key_t *key, const uint8_t *hash, size_t hash_len, uint8_t *signature)
@@ -74,7 +88,11 @@ CYS_error_t CYS_PROT_ecc_p256_sign(const CYS_PROT_ecc_p256_key_t *key, const uin
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 /* ECC Operations */
@@ -91,7 +109,11 @@ CYS_error_t CYS_ecc_p256_generate(uint8_t *private_key, uint8_t *public_key)
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
 
-    return tee_secure_entry(&info, NULL, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, NULL, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_ecc_p256_derive(const uint8_t *private_key, uint8_t *public_key)
@@ -109,7 +131,11 @@ CYS_error_t CYS_ecc_p256_derive(const uint8_t *private_key, uint8_t *public_key)
         .in_len = sizeof(in)/sizeof(io_pack_in_t),
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_ecc_p256_sign(const uint8_t *private_key, const uint8_t *hash, size_t hash_len, uint8_t *signature)
@@ -129,7 +155,11 @@ CYS_error_t CYS_ecc_p256_sign(const uint8_t *private_key, const uint8_t *hash, s
         .out_len = sizeof(out)/sizeof(io_pack_out_t)
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_ecc_p256_verify(const uint8_t *public_key, const uint8_t *hash, size_t hash_len, const uint8_t *signature)
@@ -146,5 +176,9 @@ CYS_error_t CYS_ecc_p256_verify(const uint8_t *public_key, const uint8_t *hash, 
         .out_len = 0
     };
 
-    return tee_secure_entry(&info, in, NULL);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, NULL);
+    os_release_mutex();
+
+    return status;
 }

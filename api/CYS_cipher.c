@@ -1,4 +1,5 @@
 #include "CYS/common.h"
+#include "CYS/os_mutex.h"
 #include "CYS/unprotected.h"
 #include "tee_secure_io.h"
 #include "tee_operations.h"
@@ -20,7 +21,11 @@ CYS_error_t CYS_aes_128_ecb_encrypt(const uint8_t *key, const uint8_t *message, 
         .out_len = sizeof(out)/sizeof(io_pack_out_t),
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_aes_128_ecb_decrypt(const uint8_t *key, const uint8_t *ciphertext, size_t ciphertext_len, uint8_t *message)
@@ -40,7 +45,11 @@ CYS_error_t CYS_aes_128_ecb_decrypt(const uint8_t *key, const uint8_t *ciphertex
         .out_len = sizeof(out)/sizeof(io_pack_out_t),
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_aes_128_cbc_encrypt(const uint8_t *key, const uint8_t *nonce, const uint8_t *message, size_t message_len, uint8_t *ciphertext)
@@ -61,7 +70,11 @@ CYS_error_t CYS_aes_128_cbc_encrypt(const uint8_t *key, const uint8_t *nonce, co
         .out_len = sizeof(out)/sizeof(io_pack_out_t),
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
 
 CYS_error_t CYS_aes_128_cbc_decrypt(const uint8_t *key, const uint8_t *nonce, const uint8_t *ciphertext, size_t ciphertext_len, uint8_t *message)
@@ -82,5 +95,9 @@ CYS_error_t CYS_aes_128_cbc_decrypt(const uint8_t *key, const uint8_t *nonce, co
         .out_len = sizeof(out)/sizeof(io_pack_out_t),
     };
 
-    return tee_secure_entry(&info, in, out);
+    while (os_get_mutex() != CYS_SUCCESS) {};
+    CYS_error_t status = tee_secure_entry(&info, in, out);
+    os_release_mutex();
+
+    return status;
 }
