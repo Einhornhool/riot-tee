@@ -29,6 +29,7 @@
 
 #include "CYS/common.h"
 
+#include "cc3xx_init.h"
 #include "cc310_driver/cc310_entropy.h"
 #include "random.h"
 #include "tee_rot.h"
@@ -104,6 +105,8 @@ int main(void)
     if (status != CYS_SUCCESS && status != CYS_ERROR_ALREADY_EXISTS) {
         puts("AES Platform key generation failed");
     }
+
+    cc3xx_lowlevel_init();
 
     /* Write NS vector table to SCB_NS->VTOR to be able to jump to NS image*/
     SCB_NS->VTOR = TZ_START_NS;
