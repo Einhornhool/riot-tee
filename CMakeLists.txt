@@ -21,6 +21,7 @@ set(CRYPTOSERVICE_RIOT_LIBS ${CRYPTOSERVICE_PATH}/libs/RIOT)
 # set(CMSISPATH           "${DEPENDENCIES_PATH}/cmsis_5-src/CMSIS")
 # set(OBERONPATH          "${DEPENDENCIES_PATH}/sdk-nrfxlib-src/crypto/nrf_oberon")
 
+set(CC3XXPATH           "${PROJECT_SOURCE_DIR}/3rd-party/cc3xx")
 set(NRFXPATH            "${PROJECT_SOURCE_DIR}/3rd-party/nrfx")
 set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
 set(CMSISDEVPATH        "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/Device/ARM/ARMCM33/Include")
@@ -78,6 +79,8 @@ add_subdirectory(src/random)
 # Add include dirs to executable
 target_include_directories(${EXECUTABLE_NAME}
     PUBLIC
+    ${CC3XXPATH}/common
+    ${CC3XXPATH}/low_level_driver/include
     ${CRYPTOSERVICE_PATH}/api
     ${CRYPTOSERVICE_PATH}/include
     ${CRYPTOSERVICE_PATH}/libs/RIOT/sys/include

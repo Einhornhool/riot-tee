@@ -1,6 +1,7 @@
 #include "cc310_registers.h"
 #include "cc310_hash_sha.h"
 #include "CYS/unprotected.h"
+#include <string.h>
 
 static const uint32_t SHA256_INIT[8] = {
     0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
@@ -40,6 +41,9 @@ CYS_error_t cc310_hash_sha256_update(CYS_hash_sha256_ctx_t *ctx, uint8_t *input,
         return CYS_ERROR_NOT_SUPPORTED;
     }
 
+    uint8_t inputbuf[32] = {0};
+    memcpy(inputbuf, input, input_len);
+
     /* Enable CRYPTOCELL subsystem */
     TEE_CRYPTOCELL->ENABLE = CRYPTOCELL_ENABLE_ENABLE_Enabled;
 
@@ -58,6 +62,8 @@ CYS_error_t cc310_hash_sha256_update(CYS_hash_sha256_ctx_t *ctx, uint8_t *input,
 
     /* Configure engine for SHA256 */
     TEE_CC_HASH->HASH_CONTROL = TEE_CC_HASH_HASH_CONTROL_MODE_SHA256;
+    TEE_CC_HASH->HASH_PAD = 0x00000001UL;
+    TEE_CC_HASH->HASH_PAD_AUTO = 0x00000001UL;
 
     /* Configure initial SHA256 values */
     TEE_CC_HASH->HASH_H[7] = sha256_ctx->state[7];
@@ -70,7 +76,7 @@ CYS_error_t cc310_hash_sha256_update(CYS_hash_sha256_ctx_t *ctx, uint8_t *input,
     TEE_CC_HASH->HASH_H[0] = sha256_ctx->state[0];
 
     /* Configure DMA input source address to start the cryptographic operation */
-    TEE_CC_DIN->SRC_MEM_ADDR = (uint32_t) input;
+    TEE_CC_DIN->SRC_MEM_ADDR = (uint32_t) inputbuf;
     TEE_CC_DIN->SRC_MEM_SIZE = (uint32_t) input_len;
 
     /* Wait on DIN DMA interrupt indicating data has been fetched */
