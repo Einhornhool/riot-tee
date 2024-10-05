@@ -25,7 +25,7 @@ int cc310_aes_encrypt_block(const cipher_context_t *context, const uint8_t *plai
     (void) context;
     // CYS_error_t ret = cc310_aes_128_encrypt_decrypt_with_root_key((uint8_t *)plain_block, AES_BLOCK_SIZE, cipher_block, AES_BLOCK_SIZE, TEE_CC_AES_ECB_ENCRYPT);
     size_t output_bytes = 0;
-    CYS_error_t ret = tee_internal_aes_encrypt_decrypt(CC3XX_AES_DIRECTION_ENCRYPT, CC3XX_AES_MODE_ECB, CC3XX_AES_KEYSIZE_128, CC3XX_AES_KEY_ID_KDR, NULL, NULL, 0, NULL, plain_block, AES_BLOCK_SIZE, cipher_block, AES_BLOCK_SIZE, &output_bytes);
+    CYS_error_t ret = tee_internal_aes_encrypt_decrypt(CC3XX_AES_DIRECTION_ENCRYPT, CC3XX_AES_MODE_ECB, CC3XX_AES_KEYSIZE_128, CC3XX_AES_KEY_ID_KDR, NULL, NULL, 0, NULL, (uint8_t *)plain_block, AES_BLOCK_SIZE, (uint8_t *)cipher_block, AES_BLOCK_SIZE, &output_bytes);
     if (ret != CYS_SUCCESS) {
         return CIPHER_ERR_ENC_FAILED;
     }
@@ -38,7 +38,7 @@ int cc310_aes_decrypt_block(const cipher_context_t *context, const uint8_t *ciph
 {
     (void) context;
     size_t output_bytes = 0;
-    CYS_error_t ret = tee_internal_aes_encrypt_decrypt(CC3XX_AES_DIRECTION_DECRYPT, CC3XX_AES_MODE_ECB, CC3XX_AES_KEYSIZE_128, CC3XX_AES_KEY_ID_KDR, NULL, NULL, 0, NULL, cipher_block, AES_BLOCK_SIZE, plain_block, AES_BLOCK_SIZE, &output_bytes);
+    CYS_error_t ret = tee_internal_aes_encrypt_decrypt(CC3XX_AES_DIRECTION_DECRYPT, CC3XX_AES_MODE_ECB, CC3XX_AES_KEYSIZE_128, CC3XX_AES_KEY_ID_KDR, NULL, NULL, 0, NULL, (uint8_t *)cipher_block, AES_BLOCK_SIZE, (uint8_t *)plain_block, AES_BLOCK_SIZE, &output_bytes);
 
     if (ret != CYS_SUCCESS) {
         return CIPHER_ERR_DEC_FAILED;

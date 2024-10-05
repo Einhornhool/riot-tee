@@ -3,6 +3,7 @@
 #include "CYS/sealed_key.h"
 
 #include "tee_rot.h"
+#include "tee_random.h"
 #include "tee_ecc.h"
 #include "tee_io_sanitizer.h"
 
@@ -37,7 +38,9 @@ CYS_error_t tee_prot_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_
     pub_key[0] = 0x04;
 
     do {
-        random_bytes(priv_tmp, sizeof(priv_tmp));
+        if (tee_internal_generate_random_bytes(priv_tmp, sizeof(priv_tmp)) != CYS_SUCCESS) {
+            return CYS_ERROR_GENERIC_ERROR;
+        }
     } while (ocrypto_ecdsa_p256_public_key(&pub_key[1], priv_tmp) &&
              timeout++ < MAX_REPETITION);
 
@@ -45,7 +48,9 @@ CYS_error_t tee_prot_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_GENERIC_ERROR;
     }
 
-    random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce));
+    if (tee_internal_generate_random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce)) != CYS_SUCCESS) {
+            return CYS_ERROR_GENERIC_ERROR;
+        }
 
     if (tee_rot_encrypt_key_ocb(priv_tmp, sealed_key) < 0) {
         return CYS_ERROR_GENERIC_ERROR;
@@ -67,7 +72,9 @@ CYS_error_t tee_prot_p256_seal(io_pack_in_t *in, size_t in_len, io_pack_out_t *o
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce));
+    if (tee_internal_generate_random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce)) != CYS_SUCCESS) {
+        return CYS_ERROR_GENERIC_ERROR;
+    }
 
     if (tee_rot_encrypt_key_ocb(priv_key, sealed_key)) {
         return CYS_ERROR_GENERIC_ERROR;
@@ -134,7 +141,9 @@ CYS_error_t tee_prot_p256_sign(io_pack_in_t *in, size_t in_len, io_pack_out_t *o
     }
 
     do {
-        random_bytes(session_key, TEE_ECC_P256_SESSION_KEY_SIZE);
+        if (tee_internal_generate_random_bytes(session_key, TEE_ECC_P256_SESSION_KEY_SIZE) != CYS_SUCCESS) {
+            return CYS_ERROR_GENERIC_ERROR;
+        }
     } while (ocrypto_ecdsa_p256_sign_hash(signature, hash, key_clear, session_key) &&
              timeout++ < MAX_REPETITION);
 
@@ -172,7 +181,9 @@ CYS_error_t tee_ecc_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_t
     pub_key[0] = 0x04;
 
     do {
-        random_bytes(priv_key, TEE_ECC_P256_PRIV_KEY_SIZE);
+        if (tee_internal_generate_random_bytes(priv_key, TEE_ECC_P256_PRIV_KEY_SIZE) != CYS_SUCCESS) {
+            return CYS_ERROR_GENERIC_ERROR;
+        }
     } while (ocrypto_ecdsa_p256_public_key(&pub_key[1], priv_key) &&
              timeout++ < MAX_REPETITION);
 
@@ -233,7 +244,9 @@ CYS_error_t tee_ecc_p256_sign_hash(io_pack_in_t *in, size_t in_len, io_pack_out_
     uint8_t session_key[TEE_ECC_P256_SESSION_KEY_SIZE];
 
     do {
-        random_bytes(session_key, TEE_ECC_P256_SESSION_KEY_SIZE);
+        if (tee_internal_generate_random_bytes(session_key, TEE_ECC_P256_SESSION_KEY_SIZE) != CYS_SUCCESS) {
+            return CYS_ERROR_GENERIC_ERROR;
+        }
     } while (ocrypto_ecdsa_p256_sign_hash(signature, hash, key, session_key) &&
              timeout++ < MAX_REPETITION);
 

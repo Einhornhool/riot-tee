@@ -10,14 +10,6 @@ set(CC3XX_SOURCES
     ${CC3XXPATH}/low_level_driver/src/cc3xx_lcs.c
 )
 
-add_library(${LIBRARY_NAME}
-    STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/tee_cipher.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/tee_ecc.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/tee_hashes.c
-    ${CC3XX_SOURCES}
-)
-
 set(CC3XX_INCLUDES
     ${TFM_PATH}/platform/include
     ${CC3XXPATH}/low_level_driver/include
@@ -25,6 +17,13 @@ set(CC3XX_INCLUDES
     ${CC3XXPATH}/common
 )
 
+add_library(${LIBRARY_NAME}
+    STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/tee_cipher.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/tee_ecc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/tee_hashes.c
+    ${CC3XX_SOURCES}
+)
 target_include_directories(${LIBRARY_NAME}
     PRIVATE
     ${TARGET_DIR}

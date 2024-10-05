@@ -32,7 +32,7 @@ extern "C" {
 #define RAM_SIZE            (0x40000)     /*< 256 KB */
 
 #define FLASH_START_S       (FLASH_START)
-#define FLASH_SIZE_S        (0x10000)    /*< 64 KB*/
+#define FLASH_SIZE_S        (0x20000)    /*< 64 KB*/
 
 #define RAM_START_S         (RAM_START)
 #define RAM_SIZE_S          (0x16000)   /*< 90 KB*/

@@ -23,6 +23,11 @@ Currently only usable on nRF9160.
 - Provides drivers and peripherals for Nordic microcontrollers
 - https://github.com/NordicSemiconductor/nrfx.git
 
+## Trusted Firmware-M (Fork)
+- Provides low-level drivers for CryptoCell 312
+- This fork modfies the driver code to be compatible with Cryptocell 310
+- https://github.com/Einhornhool/trusted-firmware-m/tree/main
+
 ## SDK-NRFXLIB
 - Provides crypto libraries for Nordic microcontrollers
 - https://github.com/nrfconnect/sdk-nrfxlib.git
