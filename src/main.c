@@ -30,7 +30,6 @@
 #include "CYS/common.h"
 
 #include "cc3xx_init.h"
-#include  "cc310_driver/cc310_registers.h"
 #include "tee_random.h"
 #include "tee_rot.h"
 
@@ -103,9 +102,9 @@ int main(void)
     }
 
     /* Initialize the CryptoCell */
-    TEE_CRYPTOCELL->ENABLE = 1;
+    NRF_CRYPTOCELL->ENABLE = 1;
     cc3xx_lowlevel_init();
-    TEE_CRYPTOCELL->ENABLE = 0;
+    NRF_CRYPTOCELL->ENABLE = 0;
 
     status = tee_rot_try_generate_aes_key();
     if (status != CYS_SUCCESS && status != CYS_ERROR_ALREADY_EXISTS) {

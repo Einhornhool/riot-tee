@@ -19,14 +19,12 @@ set(CRYPTOSERVICE_RIOT_LIBS ${CRYPTOSERVICE_PATH}/libs/RIOT)
 
 # set(NRFXPATH            "${DEPENDENCIES_PATH}/nrfx-src")
 # set(CMSISPATH           "${DEPENDENCIES_PATH}/cmsis_5-src/CMSIS")
-# set(OBERONPATH          "${DEPENDENCIES_PATH}/sdk-nrfxlib-src/crypto/nrf_oberon")
 
 set(TFM_PATH            "~/work/repos/tf-m-github")
 set(CC3XXPATH           "${TFM_PATH}/platform/ext/target/arm/drivers/cc3xx")
 set(NRFXPATH            "${PROJECT_SOURCE_DIR}/3rd-party/nrfx")
 set(CMSISPATH           "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/CMSIS")
 set(CMSISDEVPATH        "${PROJECT_SOURCE_DIR}/3rd-party/CMSIS_5/Device/ARM/ARMCM33/Include")
-set(OBERONPATH          "${PROJECT_SOURCE_DIR}/3rd-party/sdk-nrfxlib/crypto/nrf_oberon")
 
 set(TARGET_DIR   "${PROJECT_SOURCE_DIR}/target/nrf9160")
 
@@ -46,7 +44,6 @@ set(FLAGS
 set(SOURCES
     src/main.c
     src/entry/tee_secure_entry.c
-    ${TARGET_DIR}/cc310_driver/cc310_entropy.c
     ${NRFXPATH}/mdk/system_nrf9160.c
 )
 

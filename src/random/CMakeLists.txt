@@ -26,6 +26,7 @@ target_include_directories(${LIBRARY_NAME}
     PRIVATE
     ${CC3XX_INCLUDES}
     ${PROJECT_SOURCE_DIR}/api
+    ${PROJECT_SOURCE_DIR}/src/crypto
     ${PROJECT_SOURCE_DIR}/src/entry
     ${NRFXPATH}/mdk
     ${CMSISPATH}/Core/Include

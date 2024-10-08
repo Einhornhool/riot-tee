@@ -25,19 +25,6 @@ set(FETCHCONTENT_QUIET OFF)
 #     GIT_TAG         v3.5.0
 # )
 
-# FetchContent_Declare(
-#     sdk-nrfxlib
-#     GIT_REPOSITORY  https://github.com/nrfconnect/sdk-nrfxlib.git
-#     GIT_TAG         v2.7.0
-# )
-
 # FetchContent_MakeAvailable(cmsis_5)
 # FetchContent_MakeAvailable(nrfx)
-# FetchContent_MakeAvailable(sdk-nrfxlib)
 
-# Required by dependency sdk-nrfxlib
-function(add_subdirectory_ifdef feature_toggle source_dir)
-  if(${${feature_toggle}})
-    add_subdirectory(${source_dir} ${ARGN})
-  endif()
-endfunction()
