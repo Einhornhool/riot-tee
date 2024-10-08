@@ -23,6 +23,8 @@
 #include "tee_io_sanitizer.h"
 #include "tee_crypto_common.h"
 
+#define TEE_HASH_SHA256_BLOCK_SIZE 64
+
 CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
     if (out_len != 1) {
@@ -43,11 +45,11 @@ CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t
     }
 
     cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
-    cc3xx_lowlevel_hash_uninit();
 
 exit:
     (void) in;
     (void) in_len;
+    cc3xx_lowlevel_hash_uninit();
     NRF_CRYPTOCELL->ENABLE = 0;
     return tee_map_error_values(status);
 }
@@ -71,17 +73,27 @@ CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_
 
     cc3xx_lowlevel_hash_set_state((struct cc3xx_hash_state_t *)ctx->data);
 
-    cc3xx_err_t status = cc3xx_lowlevel_hash_update(input, input_size);
-    if (status != CC3XX_ERR_SUCCESS) {
-        goto exit;
+    cc3xx_err_t status;
+    /* Does this make sense? Shouldn't this be done by a higher level operation? What about overhead? */
+    for (size_t i = 0; i < input_size; i += TEE_HASH_SHA256_BLOCK_SIZE) {
+        size_t new_input_size = input_size - i < TEE_HASH_SHA256_BLOCK_SIZE ? input_size - i : TEE_HASH_SHA256_BLOCK_SIZE;
+        status = cc3xx_lowlevel_hash_update(input + i, new_input_size);
+        if (status != CC3XX_ERR_SUCCESS) {
+            goto exit;
+        }
     }
 
+    // status = cc3xx_lowlevel_hash_update(input, input_size);
+    // if (status != CC3XX_ERR_SUCCESS) {
+    //     goto exit;
+    // }
+
     cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
-    cc3xx_lowlevel_hash_uninit();
 
 exit:
     (void) out;
     (void) out_len;
+    cc3xx_lowlevel_hash_uninit();
     NRF_CRYPTOCELL->ENABLE = 0;
     return tee_map_error_values(status);
 }
@@ -105,6 +117,7 @@ CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_
     cc3xx_lowlevel_hash_set_state((struct cc3xx_hash_state_t *)ctx->data);
     cc3xx_lowlevel_hash_finish((uint32_t *)digest, out[0].len);
 
+    cc3xx_lowlevel_hash_uninit();
     NRF_CRYPTOCELL->ENABLE = 0;
 
     return CYS_SUCCESS;
