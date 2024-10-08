@@ -1,0 +1,51 @@
+#include "tee_crypto_common.h"
+
+CYS_error_t tee_map_error_values(cc3xx_err_t error)
+{
+    switch (error) {
+    case CC3XX_ERR_SUCCESS:
+        return CYS_SUCCESS;
+
+    case CC3XX_ERR_FAULT_DETECTED:
+    case CC3XX_ERR_BUFFER_OVERFLOW:
+    case CC3XX_ERR_DFA_VIOLATION:
+        return CYS_ERROR_CORRUPTION_DETECTED;
+
+    case CC3XX_ERR_INVALID_LCS:
+    case CC3XX_ERR_INVALID_DATA:
+        return CYS_ERROR_DATA_INVALID;
+
+    case CC3XX_ERR_INVALID_STATE:
+    case CC3XX_ERR_DRBG_RESEED_REQUIRED:
+        return CYS_ERROR_BAD_STATE;
+
+    case CC3XX_ERR_KEY_IMPORT_FAILED:
+        return CYS_ERROR_NOT_PERMITTED;
+    case CC3XX_ERR_BUS_ERROR:
+        return CYS_ERROR_COMMUNICATION_FAILURE;
+
+    case CC3XX_ERR_RNG_TOO_MANY_ATTEMPTS:
+    case CC3XX_ERR_ENGINE_IN_USE:
+        return CYS_ERROR_GENERIC_ERROR;
+
+    case CC3XX_ERR_VERIFY_FAILED:
+    case CC3XX_ERR_INVALID_TAG:
+        return CYS_ERROR_INVALID_SIGNATURE;
+
+    case CC3XX_ERR_DMA_OUTPUT_BUFFER_TOO_SMALL:
+        return CYS_ERROR_BUFFER_TOO_SMALL;
+
+    case CC3XX_ERR_INVALID_INPUT_LENGTH:
+    case CC3XX_ERR_INVALID_REMAP_REGION:
+    case CC3XX_ERR_CHACHA_IV_SIZE_INCORRECT:
+    case CC3XX_ERR_DRBG_INVALID_ID:
+        return CYS_ERROR_INVALID_ARGUMENT;
+
+    case CC3XX_ERR_GCM_VARIABLE_IV_NOT_IMPLEMENTED:
+    case CC3XX_ERR_NOT_IMPLEMENTED:
+        return CYS_ERROR_NOT_SUPPORTED;
+
+    default:
+        return CYS_ERROR_HARDWARE_FAILURE;
+    }
+}

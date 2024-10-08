@@ -4,7 +4,7 @@ FLASH_START         = 0x0;
 FLASH_SIZE          = 0x100000;   /*< 1024 MB */
 
 FLASH_START_S       = FLASH_START;
-FLASH_SIZE_S        = 0x10000;    /*< 64 KB*/
+FLASH_SIZE_S        = 0x20000;    /*< 64 KB*/
 
 FLASH_SIZE_NSC      = 0x20;  /*< 32 B */
 FLASH_START_NSC     = (FLASH_START_S + FLASH_SIZE_S) - FLASH_SIZE_NSC;

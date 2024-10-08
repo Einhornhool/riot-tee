@@ -4,16 +4,24 @@ add_library(${LIBRARY_NAME}
     STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_rot.c
     ${CMAKE_CURRENT_SOURCE_DIR}/tee_cipher_block.c
-    ${TARGET_DIR}/cc310_driver/cc310_aes_128.c
     ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/ciphers.c
     ${CRYPTOSERVICE_RIOT_LIBS}/sys/crypto/modes/ocb.c
+)
+
+set(CC3XX_INCLUDES
+    ${TFM_PATH}/platform/include
+    ${CC3XXPATH}/low_level_driver/include
+    ${CC3XXPATH}/low_level_driver/src
+    ${CC3XXPATH}/common
 )
 
 target_include_directories(${LIBRARY_NAME}
     PRIVATE
     ${TARGET_DIR}
+    ${CC3XX_INCLUDES}
     ${CMAKE_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/api
+    ${PROJECT_SOURCE_DIR}/src/crypto
     ${PROJECT_SOURCE_DIR}/src/random
     ${NRFXPATH}/mdk
     ${CMSISPATH}/Core/Include

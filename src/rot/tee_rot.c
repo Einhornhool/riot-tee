@@ -2,7 +2,7 @@
 #include "random.h"
 #include "CYS/common.h"
 #include "CYS/sealed_key.h"
-#include "cc310_driver/cc310_registers.h"
+#include "cc310_registers.h"
 
 #include "tee_rot.h"
 

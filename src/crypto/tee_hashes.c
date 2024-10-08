@@ -18,9 +18,10 @@
 #include "CYS/unprotected.h"
 
 #include "cc3xx_hash.h"
-#include "cc310_driver/cc310_registers.h"
+
 #include "tee_secure_io.h"
 #include "tee_io_sanitizer.h"
+#include "tee_crypto_common.h"
 
 CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
@@ -34,28 +35,26 @@ CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    TEE_CRYPTOCELL->ENABLE = 1;
+    NRF_CRYPTOCELL->ENABLE = 1;
 
     cc3xx_err_t status = cc3xx_lowlevel_hash_init(CC3XX_HASH_ALG_SHA256);
     if (status != CC3XX_ERR_SUCCESS) {
-        return CYS_ERROR_GENERIC_ERROR;
+        goto exit;
     }
 
     cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
-
     cc3xx_lowlevel_hash_uninit();
 
-    TEE_CRYPTOCELL->ENABLE = 0;
-
+exit:
     (void) in;
     (void) in_len;
-    return CYS_SUCCESS;
+    NRF_CRYPTOCELL->ENABLE = 0;
+    return tee_map_error_values(status);
 }
 
 CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
 {
-    if (in_len != 2)
-    {
+    if (in_len != 2) {
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
@@ -68,23 +67,23 @@ CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_
 
     size_t input_size = in[1].len;
 
-    TEE_CRYPTOCELL->ENABLE = 1;
+    NRF_CRYPTOCELL->ENABLE = 1;
 
     cc3xx_lowlevel_hash_set_state((struct cc3xx_hash_state_t *)ctx->data);
 
     cc3xx_err_t status = cc3xx_lowlevel_hash_update(input, input_size);
     if (status != CC3XX_ERR_SUCCESS) {
-        return CYS_ERROR_GENERIC_ERROR;
+        goto exit;
     }
 
     cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
     cc3xx_lowlevel_hash_uninit();
 
-    TEE_CRYPTOCELL->ENABLE = 0;
-
+exit:
     (void) out;
     (void) out_len;
-    return CYS_SUCCESS;
+    NRF_CRYPTOCELL->ENABLE = 0;
+    return tee_map_error_values(status);
 }
 
 CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_t *out, size_t out_len)
@@ -101,10 +100,12 @@ CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    TEE_CRYPTOCELL->ENABLE = 1;
+    NRF_CRYPTOCELL->ENABLE = 1;
 
     cc3xx_lowlevel_hash_set_state((struct cc3xx_hash_state_t *)ctx->data);
     cc3xx_lowlevel_hash_finish((uint32_t *)digest, out[0].len);
-    TEE_CRYPTOCELL->ENABLE = 0;
+
+    NRF_CRYPTOCELL->ENABLE = 0;
+
     return CYS_SUCCESS;
 }

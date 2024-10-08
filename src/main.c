@@ -30,8 +30,7 @@
 #include "CYS/common.h"
 
 #include "cc3xx_init.h"
-#include "cc310_driver/cc310_entropy.h"
-#include "random.h"
+#include "tee_random.h"
 #include "tee_rot.h"
 
 extern unsigned int FLASH_START_NS;
@@ -45,8 +44,8 @@ typedef int __attribute__((cmse_nonsecure_call)) nsfunc(void);
 int main(void)
 {
     /* Flash is separated into 32 * 32KB regions.
-       The first two (64KB) are secure, all others are NS */
-    for (uint32_t i = 2; i < 32; i++) {
+       The first four (128KB) are secure, all others are NS */
+    for (uint32_t i = 4; i < 32; i++) {
         /* Initial value is 0x0001 0101
            NS value is 0x0000 0101 */
         NRF_SPU_S->FLASHREGION[i].PERM &=
@@ -68,7 +67,7 @@ int main(void)
        flash_nsc_id can be 0 or 1. We only have one
        region, so we use ID 0 */
     int flash_nsc_id = 0;
-    int flash_region = 1;
+    int flash_region = 3;
 
     /* We configure the end of flash region 1 as NSC
        NSC region is 32B, which is the smallest possible size */
@@ -96,17 +95,21 @@ int main(void)
     /* Raise NS exception priority to 0x80 to prevent preemption of secure fault exceptions */
     SCB->AIRCR |= SCB_AIRCR_PRIS_Msk;
 
-    /* Initialize the random number generator with HW RNG */
-    uint32_t rng_seed[NRF_CC_RNG_OUTPUT_LEN/4];
-    CYS_error_t status = cc310_rng_get_entropy(rng_seed, sizeof(rng_seed));
-    random_init_by_array(rng_seed, NRF_CC_RNG_OUTPUT_LEN);
+    /* Initialize the random number generator */
+    CYS_error_t status = tee_init_random();
+    if (status != CYS_SUCCESS) {
+        puts("Random number generator initialization failed");
+    }
+
+    /* Initialize the CryptoCell */
+    NRF_CRYPTOCELL->ENABLE = 1;
+    cc3xx_lowlevel_init();
+    NRF_CRYPTOCELL->ENABLE = 0;
 
     status = tee_rot_try_generate_aes_key();
     if (status != CYS_SUCCESS && status != CYS_ERROR_ALREADY_EXISTS) {
         puts("AES Platform key generation failed");
     }
-
-    cc3xx_lowlevel_init();
 
     /* Write NS vector table to SCB_NS->VTOR to be able to jump to NS image*/
     SCB_NS->VTOR = TZ_START_NS;
