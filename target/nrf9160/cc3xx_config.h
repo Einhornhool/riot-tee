@@ -42,4 +42,31 @@
 #define CC3XX_CONFIG_PKA_MAX_VIRT_REG_AMOUNT 64
 #endif /* CC3XX_CONFIG_PKA_MAX_VIRT_REG_AMOUNT */
 
+/* Whether barrett tags will be calculated if they are not known. Note that
+ * barrett tags are required for modular reduction. If disabled, this may
+ * decrease code size.
+ */
+#define CC3XX_CONFIG_PKA_CALC_NP_ENABLE
+
+/* Whether PKA operations will be inlined to increase performance at the cost of
+ * code size
+ */
+#define CC3XX_CONFIG_PKA_INLINE_FOR_PERFORMANCE
+
+/* Whether PKA variables will be aligned to word-size to increase performance at
+ * the cost of code size
+ */
+#define CC3XX_CONFIG_PKA_ALIGN_FOR_PERFORMANCE
+
+#define CC3XX_CONFIG_EC_CURVE_TYPE_WEIERSTRASS_ENABLE
+// #define CC3XX_CONFIG_EC_CURVE_TYPE_TWISTED_EDWARDS_ENABLE
+
+#define CC3XX_CONFIG_EC_CURVE_SECP_256_R1_ENABLE
+// #define CC3XX_CONFIG_EC_CURVE_ED25519_ENABLE
+
+/* Whether various ECDSA features are enabled */
+#define CC3XX_CONFIG_ECDSA_SIGN_ENABLE
+#define CC3XX_CONFIG_ECDSA_VERIFY_ENABLE
+#define CC3XX_CONFIG_ECDSA_KEYGEN_ENABLE
+
 #endif // CC3XX_CONFIG_H

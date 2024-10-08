@@ -6,11 +6,6 @@
 #include "nrf9160_bitfields.h"
 
 typedef struct {
-    __IM  uint32_t RESERVED[320];           /*0x000*/
-    __IOM uint32_t ENABLE;                  /*0x500*/
-} TEE_CRYPTOCELL_Type;
-
-typedef struct {
     __IM uint32_t RESERVED[64];           /*0x000*/
     __IOM uint32_t RNG_IMR;               /*0x100*/
     __IM uint32_t RNG_ISR;                /*0x104*/
@@ -173,46 +168,25 @@ typedef struct {
     __OM uint32_t CHACHA_CLK;              /*0x858*/
 } TEE_CC_MISC_Type;
 
-static const int TEE_CRYPTOCELL_BASE     = 0x50840000;
-static const int TEE_CC_AES_BASE         = 0x50841000;
-static const int TEE_CC_HASH_BASE        = 0x50841000;
-static const int TEE_CC_AHB_BASE         = 0x50841000;
-static const int TEE_CC_CTL_BASE         = 0x50841000;
-static const int TEE_CC_DIN_BASE         = 0x50841000;
-static const int TEE_CC_DOUT_BASE        = 0x50841000;
-static const int TEE_CC_MISC_BASE        = 0x50841000;
-static const int TEE_CC_HOST_RGF_BASE    = 0x50841000;
-static const int TEE_CC_RNG_BASE         = 0x50841000;
+#define TEE_CC_AES_BASE          (0x50841000)
+#define TEE_CC_HASH_BASE         (0x50841000)
+#define TEE_CC_AHB_BASE          (0x50841000)
+#define TEE_CC_CTL_BASE          (0x50841000)
+#define TEE_CC_DIN_BASE          (0x50841000)
+#define TEE_CC_DOUT_BASE         (0x50841000)
+#define TEE_CC_MISC_BASE         (0x50841000)
+#define TEE_CC_HOST_RGF_BASE     (0x50841000)
+#define TEE_CC_RNG_BASE          (0x50841000)
 
-__attribute__ ((unused))
-static TEE_CRYPTOCELL_Type *TEE_CRYPTOCELL      = ((TEE_CRYPTOCELL_Type *) TEE_CRYPTOCELL_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_AES_Type *TEE_CC_AES              = ((TEE_CC_AES_Type *) TEE_CC_AES_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_HASH_Type *TEE_CC_HASH            = ((TEE_CC_HASH_Type *) TEE_CC_HASH_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_AHB_Type *TEE_CC_AHB              = ((TEE_CC_AHB_Type *) TEE_CC_AHB_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_CTL_Type *TEE_CC_CTL              = ((TEE_CC_CTL_Type *) TEE_CC_CTL_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_DIN_Type *TEE_CC_DIN              = ((TEE_CC_DIN_Type *) TEE_CC_DIN_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_DOUT_Type *TEE_CC_DOUT            = ((TEE_CC_DOUT_Type *) TEE_CC_DOUT_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_MISC_Type *TEE_CC_MISC            = ((TEE_CC_MISC_Type *) TEE_CC_MISC_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_HOST_RGF_Type *TEE_CC_HOST_RGF    = ((TEE_CC_HOST_RGF_Type *) TEE_CC_HOST_RGF_BASE);
-
-__attribute__ ((unused))
-static TEE_CC_RNG_Type *TEE_CC_RNG              = ((TEE_CC_RNG_Type *) TEE_CC_RNG_BASE);
+#define TEE_CC_AES               ((TEE_CC_AES_Type *) TEE_CC_AES_BASE)
+#define TEE_CC_HASH             ((TEE_CC_HASH_Type *) TEE_CC_HASH_BASE)
+#define TEE_CC_AHB               ((TEE_CC_AHB_Type *) TEE_CC_AHB_BASE)
+#define TEE_CC_CTL               ((TEE_CC_CTL_Type *) TEE_CC_CTL_BASE)
+#define TEE_CC_DIN               ((TEE_CC_DIN_Type *) TEE_CC_DIN_BASE)
+#define TEE_CC_DOUT             ((TEE_CC_DOUT_Type *) TEE_CC_DOUT_BASE)
+#define TEE_CC_MISC             ((TEE_CC_MISC_Type *) TEE_CC_MISC_BASE)
+#define TEE_CC_HOST_RGF     ((TEE_CC_HOST_RGF_Type *) TEE_CC_HOST_RGF_BASE)
+#define TEE_CC_RNG               ((TEE_CC_RNG_Type *) TEE_CC_RNG_BASE)
 
 #define TEE_CC_MISC_AES_CLK_ENABLE_Enable       (1UL)
 #define TEE_CC_MISC_HASH_CLK_ENABLE_Enable      (1UL)
