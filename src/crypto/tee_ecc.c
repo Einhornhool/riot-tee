@@ -23,8 +23,6 @@ CYS_error_t tee_prot_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    int timeout = 0;
-
     CYS_PROT_ecc_p256_key_t *sealed_key =
         (CYS_PROT_ecc_p256_key_t *)cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
     uint8_t *pub_key = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
@@ -35,15 +33,9 @@ CYS_error_t tee_prot_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_
 
     uint8_t priv_tmp[TEE_ECC_P256_PRIV_KEY_SIZE];
 
-    pub_key[0] = 0x04;
-
-    do {
-        random_bytes(priv_tmp, sizeof(priv_tmp));
-    } while (ocrypto_ecdsa_p256_public_key(&pub_key[1], priv_tmp) &&
-             timeout++ < MAX_REPETITION);
-
-    if (timeout >= MAX_REPETITION) {
-        return CYS_ERROR_GENERIC_ERROR;
+    CYS_error_t status = CYS_ecc_p256_generate(priv_tmp, pub_key);
+    if (status != CYS_SUCCESS) {
+        return status;
     }
 
     random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce));
@@ -78,7 +70,6 @@ CYS_error_t tee_prot_p256_sign(io_pack_in_t *in, size_t in_len, io_pack_out_t *o
     if (in_len != 2 || out_len != 1) {
         return CYS_ERROR_INVALID_ARGUMENT;
     }
-    int timeout = 0;
 
     CYS_PROT_ecc_p256_key_t *key =
         (CYS_PROT_ecc_p256_key_t *)cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
@@ -90,30 +81,18 @@ CYS_error_t tee_prot_p256_sign(io_pack_in_t *in, size_t in_len, io_pack_out_t *o
     }
 
     size_t hash_len = in[1].len;
-    size_t signature_size = out[0].len;
 
-    if (hash_len != TEE_ECC_P256_HASH_SIZE ||
-        signature_size < TEE_ECC_P256_SIGNATURE_SIZE) {
+    if (hash_len != TEE_ECC_P256_HASH_SIZE) {
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
     uint8_t key_clear[TEE_ECC_P256_PRIV_KEY_SIZE];
-    uint8_t session_key[TEE_ECC_P256_SESSION_KEY_SIZE];
 
     if (tee_rot_decrypt_key_ocb(key, key_clear) < 0) {
         return CYS_ERROR_GENERIC_ERROR;
     }
 
-    do {
-        random_bytes(session_key, TEE_ECC_P256_SESSION_KEY_SIZE);
-    } while (ocrypto_ecdsa_p256_sign_hash(signature, hash, key_clear, session_key) &&
-             timeout++ < MAX_REPETITION);
-
-    if (timeout >= MAX_REPETITION) {
-        return CYS_ERROR_GENERIC_ERROR;
-    }
-
-    return CYS_SUCCESS;
+    return CYS_ecc_p256_sign(key_clear, hash, hash_len, signature);
 }
 
 /* ECC Operations */
