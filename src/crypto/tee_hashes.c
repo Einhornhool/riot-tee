@@ -75,18 +75,20 @@ CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_
 
     cc3xx_err_t status;
     /* Does this make sense? Shouldn't this be done by a higher level operation? What about overhead? */
-    for (size_t i = 0; i < input_size; i += TEE_HASH_SHA256_BLOCK_SIZE) {
-        size_t new_input_size = input_size - i < TEE_HASH_SHA256_BLOCK_SIZE ? input_size - i : TEE_HASH_SHA256_BLOCK_SIZE;
-        status = cc3xx_lowlevel_hash_update(input + i, new_input_size);
+    if (input_size > TEE_HASH_SHA256_BLOCK_SIZE) {
+        for (size_t i = 0; i < input_size; i += TEE_HASH_SHA256_BLOCK_SIZE) {
+            size_t new_input_size = input_size - i < TEE_HASH_SHA256_BLOCK_SIZE ? input_size - i : TEE_HASH_SHA256_BLOCK_SIZE;
+            status = cc3xx_lowlevel_hash_update(input + i, new_input_size);
+            if (status != CC3XX_ERR_SUCCESS) {
+                goto exit;
+            }
+        }
+    } else {
+        status = cc3xx_lowlevel_hash_update(input, input_size);
         if (status != CC3XX_ERR_SUCCESS) {
             goto exit;
         }
     }
-
-    // status = cc3xx_lowlevel_hash_update(input, input_size);
-    // if (status != CC3XX_ERR_SUCCESS) {
-    //     goto exit;
-    // }
 
     cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
 
