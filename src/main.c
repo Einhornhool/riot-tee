@@ -32,10 +32,10 @@
 
 #include "tee_rot.h"
 
-extern unsigned int FLASH_START_NS;
+extern uint32_t FLASH_START_NS[];
 
 /* Define the start of the non-secure vector table */
-const unsigned long TZ_START_NS = (unsigned int) (&FLASH_START_NS);
+const uint32_t TZ_START_NS = (uint32_t) (FLASH_START_NS);
 
 /* Define the function pointer type for the non-secure reset handler */
 typedef int __attribute__((cmse_nonsecure_call)) nsfunc(void);

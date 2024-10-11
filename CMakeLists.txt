@@ -40,6 +40,8 @@ set(FLAGS
     "-mfloat-abi=hard"
     "-mabi=aapcs"
     "-mfpu=fpv5-sp-d16"
+    "-O2"
+
 )
 
 set(SOURCES
@@ -55,7 +57,11 @@ set(ASM_SOURCES
 set_source_files_properties(${ASM_SOURCES}
     PROPERTIES
     COMPILE_FLAGS
-    ${FLAGS}
+    "-mcpu=cortex-m33"
+    "-mthumb"
+    "-mfloat-abi=hard"
+    "-mabi=aapcs"
+    "-mfpu=fpv5-sp-d16"
     "-x"
     "assembler-with-cpp"
 )

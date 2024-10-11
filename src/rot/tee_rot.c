@@ -82,7 +82,14 @@ CYS_error_t tee_rot_encrypt_key_ocb(uint8_t *key_in, CYS_PROT_ecc_p256_key_t *se
     aes_key[3] = NRF_UICR_S->KEYSLOT.KEY[TEE_ROT_KEY_AES_ID-1].VALUE[3];
 
     cipher_t cipher;
-    cipher_init(&cipher, CIPHER_AES, (uint8_t *)aes_key, TEE_ROT_AES_128_KEY_BYTES);
+    cipher.interface = CIPHER_AES;
+    cipher.context.key_size = TEE_ROT_AES_128_KEY_BYTES;
+
+    for (int i = 0; i < 16; i++) {
+        cipher.context.context[i] = ((uint8_t *)aes_key)[i];
+    }
+
+    // cipher_init(&cipher, CIPHER_AES, (uint8_t *)aes_key, TEE_ROT_AES_128_KEY_BYTES);
 
     int32_t result = cipher_encrypt_ocb(&cipher, NULL, 0, CYS_PROT_SEAL_TAG_SIZE, sealed_key->nonce, CYS_PROT_SEAL_NONCE_SIZE, key_in, CYS_PROT_ECC_P256_KEY_SIZE, sealed_key->private_key);
 
@@ -115,7 +122,13 @@ CYS_error_t tee_rot_decrypt_key_ocb(CYS_PROT_ecc_p256_key_t *sealed_key, uint8_t
     aes_key[3] = NRF_UICR_S->KEYSLOT.KEY[TEE_ROT_KEY_AES_ID-1].VALUE[3];
 
     cipher_t cipher;
-    cipher_init(&cipher, CIPHER_AES, (uint8_t *)aes_key, TEE_ROT_AES_128_KEY_BYTES);
+    cipher.interface = CIPHER_AES;
+    cipher.context.key_size = TEE_ROT_AES_128_KEY_BYTES;
+
+    for (int i = 0; i < 16; i++) {
+        cipher.context.context[i] = ((uint8_t *)aes_key)[i];
+    }
+    // cipher_init(&cipher, CIPHER_AES, (uint8_t *)aes_key, TEE_ROT_AES_128_KEY_BYTES);
 
     int32_t result = cipher_decrypt_ocb(&cipher, NULL, 0, CYS_PROT_SEAL_TAG_SIZE, sealed_key->nonce, CYS_PROT_SEAL_NONCE_SIZE, sealed_key->private_key, CYS_PROT_ECC_P256_KEY_SIZE+CYS_PROT_SEAL_TAG_SIZE, key_out);
 
