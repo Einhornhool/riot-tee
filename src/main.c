@@ -33,6 +33,8 @@
 #include "tee_random.h"
 #include "tee_rot.h"
 
+#include "nrf9160.h"
+
 extern unsigned int FLASH_START_NS;
 
 /* Define the start of the non-secure vector table */
@@ -86,6 +88,9 @@ int main(void)
     /* Configure TIMER1 for NS access */
     NRF_SPU_S->PERIPHID[NRFX_PERIPHERAL_ID_GET(NRF_TIMER1_NS)].PERM &= ~(SPU_FLASHREGION_PERM_SECATTR_Msk);
 
+    NRF_P0_S->DIRSET |= (1 << 6);
+    NRF_P0_S->OUTCLR |= (1 << 6);
+
     /* Set GPIO P0 pin attributes to 0 (= non-secure) */
     NRF_SPU_S->GPIOPORT[0].PERM = 0x00000000ul;
 
@@ -119,7 +124,8 @@ int main(void)
     __TZ_set_MSP_NS(vtor[0]);
 
     /* Call the non-secure reset handler */
-    nsfunc *ns_reset_handler = (nsfunc*)(vtor[1]);
+    // nsfunc *ns_reset_handler = (nsfunc*)(vtor[1]);
+    nsfunc *ns_reset_handler = (nsfunc*)(0x209ed);
     ns_reset_handler();
 
     while (1) {}

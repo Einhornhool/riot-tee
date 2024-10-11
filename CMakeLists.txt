@@ -110,6 +110,7 @@ target_compile_options(${EXECUTABLE_NAME} PUBLIC
     "-mcmse"
     "-Wall"
     "-Werror"
+    "-Os"
 )
 
 target_link_options(${EXECUTABLE_NAME}

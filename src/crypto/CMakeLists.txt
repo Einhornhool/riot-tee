@@ -60,6 +60,7 @@ target_compile_options(${LIBRARY_NAME}
     "-Werror"
     "-Wno-address-of-packed-member"
     "-Wno-unused-function"
+    "-Os"
 )
 
 target_link_options(${LIBRARY_NAME}
