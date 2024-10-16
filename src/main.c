@@ -35,10 +35,10 @@
 
 #include "nrf9160.h"
 
-extern unsigned int FLASH_START_NS;
+extern unsigned int FLASH_START_NS[];
 
 /* Define the start of the non-secure vector table */
-const unsigned long TZ_START_NS = (unsigned int) (&FLASH_START_NS);
+const unsigned long TZ_START_NS = (unsigned int) (FLASH_START_NS);
 
 /* Define the function pointer type for the non-secure reset handler */
 typedef int __attribute__((cmse_nonsecure_call)) nsfunc(void);
@@ -124,8 +124,7 @@ int main(void)
     __TZ_set_MSP_NS(vtor[0]);
 
     /* Call the non-secure reset handler */
-    // nsfunc *ns_reset_handler = (nsfunc*)(vtor[1]);
-    nsfunc *ns_reset_handler = (nsfunc*)(0x209ed);
+    nsfunc *ns_reset_handler = (nsfunc*)(vtor[1]);
     ns_reset_handler();
 
     while (1) {}
