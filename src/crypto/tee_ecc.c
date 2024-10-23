@@ -24,9 +24,9 @@ static CYS_error_t tee_internal_ecc_genkey(cc3xx_ec_curve_id_t curve_id, uint8_t
 {
     size_t priv_key_len = 0;
     NRF_CRYPTOCELL->ENABLE = 1;
-    NRF_P0_S->OUTSET |= (1 << 6);
+    NRF_P0_S->OUTSET = (1 << 7);
     cc3xx_err_t err = cc3xx_lowlevel_ecdsa_genkey(curve_id, (uint32_t *)privkey, privkey_size, &priv_key_len);
-    NRF_P0_S->OUTCLR |= (1 << 6);
+    NRF_P0_S->OUTCLR = (1 << 7);
     if (err != CC3XX_ERR_SUCCESS) {
         return tee_map_error_values(err);
     }
@@ -46,9 +46,9 @@ static CYS_error_t tee_internal_ecc_derive(cc3xx_ec_curve_id_t curve_id, uint8_t
     size_t pubkey_x_size, pubkey_y_size;
 
     NRF_CRYPTOCELL->ENABLE = 1;
-    NRF_P0_S->OUTSET |= (1 << 6);
+    NRF_P0_S->OUTSET |= (1 << 7);
     err = cc3xx_lowlevel_ecdsa_getpub(curve_id, (uint32_t *)privkey, privkey_size, pubkey_x, sizeof(pubkey_x), &pubkey_x_size, pubkey_y, sizeof(pubkey_y), &pubkey_y_size);
-    NRF_P0_S->OUTCLR |= (1 << 6);
+    NRF_P0_S->OUTCLR |= (1 << 7);
     if (err != CC3XX_ERR_SUCCESS) {
         goto exit;
     }
@@ -152,9 +152,9 @@ static CYS_error_t tee_internal_ecdsa_sign(cc3xx_ec_curve_id_t curve_id, uint8_t
 
     NRF_CRYPTOCELL->ENABLE = 1;
 
-    NRF_P0_S->OUTSET |= (1 << 6);
+    NRF_P0_S->OUTSET |= (1 << 7);
     cc3xx_err_t err = cc3xx_lowlevel_ecdsa_sign(curve_id, (uint32_t *)privkey, privkey_size, (uint32_t *)hash, hash_len, sig_r, sizeof(sig_r), &sig_r_size, sig_s, sizeof(sig_s), &sig_s_size);
-    NRF_P0_S->OUTCLR |= (1 << 6);
+    NRF_P0_S->OUTCLR |= (1 << 7);
     NRF_CRYPTOCELL->ENABLE = 0;
 
     if (err != CC3XX_ERR_SUCCESS) {
@@ -291,14 +291,14 @@ static CYS_error_t tee_internal_ecdsa_verify(cc3xx_ec_curve_id_t curve_id, uint8
     memcpy(sig_s, &signature[sig_rs_len], sig_rs_len);
 
     NRF_CRYPTOCELL->ENABLE = 1;
-    NRF_P0_S->OUTSET |= (1 << 6);
+    NRF_P0_S->OUTSET |= (1 << 7);
     cc3xx_err_t err = cc3xx_lowlevel_ecdsa_verify(curve_id,
                                                   pk_x, pub_xy_len,
                                                   pk_y, pub_xy_len,
                                                   (uint32_t *)hash, hash_len,
                                                   sig_r, sig_rs_len,
                                                   sig_s, sig_rs_len);
-    NRF_P0_S->OUTCLR |= (1 << 6);
+    NRF_P0_S->OUTCLR |= (1 << 7);
     NRF_CRYPTOCELL->ENABLE = 0;
 
     return tee_map_error_values(err);

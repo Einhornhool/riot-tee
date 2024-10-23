@@ -88,11 +88,11 @@ int main(void)
     /* Configure TIMER1 for NS access */
     NRF_SPU_S->PERIPHID[NRFX_PERIPHERAL_ID_GET(NRF_TIMER1_NS)].PERM &= ~(SPU_FLASHREGION_PERM_SECATTR_Msk);
 
-    NRF_P0_S->DIRSET |= (1 << 6);
-    NRF_P0_S->OUTCLR |= (1 << 6);
-
     /* Set GPIO P0 pin attributes to 0 (= non-secure) */
     NRF_SPU_S->GPIOPORT[0].PERM = 0x00000000ul;
+
+    NRF_P0_S->DIRSET |= (1 << 7);
+    NRF_P0_S->OUTCLR |= (1 << 7);
 
     /* Make sure floating point registers are cleared when returning to non-secure world */
     FPU->FPCCR |= FPU_FPCCR_TS_Msk | FPU_FPCCR_CLRONRET_Msk | FPU_FPCCR_CLRONRETS_Msk;

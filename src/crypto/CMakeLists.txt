@@ -16,6 +16,11 @@ set(CC3XX_SOURCES
     ${CC3XXPATH}/low_level_driver/src/cc3xx_pka.c
 )
 
+# # Always compile cc3xx_pka.c with -Ofast for optimized speed
+# set_source_files_properties(${CC3XXPATH}/low_level_driver/src/cc3xx_pka.c
+#     PROPERTIES COMPILE_FLAGS -Ofast
+# )
+
 set(CC3XX_INCLUDES
     ${TFM_PATH}/platform/include
     ${CC3XXPATH}/low_level_driver/include

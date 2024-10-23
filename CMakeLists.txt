@@ -31,8 +31,8 @@ set(TARGET_DIR   "${PROJECT_SOURCE_DIR}/target/nrf9160")
 set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
 set(NSC_LIB             "${CMAKE_BINARY_DIR}/nsc_lib.o")
 set(MAP_FILE            "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
-set(CMAKE_BUILD_TYPE    "Debug")
-
+set(CMAKE_BUILD_TYPE    "MinSizeRel")
+# set(CMAKE_BUILD_TYPE    "Debug")
 set(FLAGS
     "-mcpu=cortex-m33"
     "-mthumb"
@@ -62,6 +62,11 @@ set_source_files_properties(${ASM_SOURCES}
     "-mfpu=fpv5-sp-d16"
     "-x"
     "assembler-with-cpp"
+)
+
+# Always compile cc3xx_pka.c with -Ofast for optimized speed
+set_source_files_properties(${CC3XXPATH}/low_level_driver/src/cc3xx_pka.c
+    PROPERTIES COMPILE_FLAGS -Ofast
 )
 
 set(EXECUTABLE_NAME ${PROJECT_NAME}.elf)
