@@ -32,7 +32,8 @@ set(TARGET_DIR          "${PROJECT_SOURCE_DIR}/target/nrf9160")
 set(LINKER_SCRIPT       "${CMAKE_SOURCE_DIR}/ld/common.ld")
 set(NSC_LIB             "${CMAKE_BINARY_DIR}/nsc_lib.o")
 set(MAP_FILE            "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
-set(CMAKE_BUILD_TYPE    "Debug")
+# set(CMAKE_BUILD_TYPE    "Debug")
+set(CMAKE_BUILD_TYPE    "MinSizeRel")
 
 set(FLAGS
     "-mcpu=cortex-m33"
@@ -40,7 +41,7 @@ set(FLAGS
     "-mfloat-abi=hard"
     "-mabi=aapcs"
     "-mfpu=fpv5-sp-d16"
-    "-O2"
+    "-Os"
 
 )
 
