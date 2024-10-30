@@ -65,9 +65,9 @@ set_source_files_properties(${ASM_SOURCES}
 )
 
 # Always compile cc3xx_pka.c with -Ofast for optimized speed
-set_source_files_properties(${CC3XXPATH}/low_level_driver/src/cc3xx_pka.c
-    PROPERTIES COMPILE_FLAGS -Ofast
-)
+# set_source_files_properties(${CC3XXPATH}/low_level_driver/src/cc3xx_pka.c
+#     PROPERTIES COMPILE_FLAGS -Ofast
+# )
 
 set(EXECUTABLE_NAME ${PROJECT_NAME}.elf)
 
