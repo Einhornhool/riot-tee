@@ -31,9 +31,19 @@ CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    CYS_hash_sha256_ctx_t *ctx = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    size_t ctx_len = out[0].len;
+    if (ctx_len != sizeof(CYS_hash_sha256_ctx_t)) {
+        return CYS_ERROR_INVALID_ARGUMENT;
+    }
+
+    CYS_hash_sha256_ctx_t *ctx = cmse_check_address_range(out[0].data, ctx_len, CMSE_NONSECURE);
 
     if (ctx == NULL) {
+        return CYS_ERROR_CORRUPTION_DETECTED;
+    }
+
+    struct cc3xx_hash_state_t* hash_state = cmse_check_address_range((void*)ctx->data, sizeof(struct cc3xx_hash_state_t), CMSE_NONSECURE);
+    if (hash_state == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
@@ -44,7 +54,7 @@ CYS_error_t tee_hash_sha256_setup(io_pack_in_t *in, size_t in_len, io_pack_out_t
         goto exit;
     }
 
-    cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
+    cc3xx_lowlevel_hash_get_state(hash_state);
 
 exit:
     (void) in;
@@ -60,18 +70,25 @@ CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    CYS_hash_sha256_ctx_t *ctx = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *input = cmse_check_address_range((void *)in[1].data, in[1].len, CMSE_NONSECURE);
+    size_t ctx_len = in[0].len;
+    size_t input_size = in[1].len;
+
+    if (ctx_len != sizeof(CYS_hash_sha256_ctx_t)) {
+        return CYS_ERROR_INVALID_ARGUMENT;
+    }
+
+    CYS_hash_sha256_ctx_t *ctx = cmse_check_address_range((void *)in[0].data, ctx_len, CMSE_NONSECURE);
+    uint8_t *input = cmse_check_address_range((void *)in[1].data, input_size, CMSE_NONSECURE);
 
     if (ctx == NULL || input == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    size_t input_size = in[1].len;
+    struct cc3xx_hash_state_t *hash_state = cmse_check_address_range((void *)ctx->data, sizeof(struct cc3xx_hash_state_t), CMSE_NONSECURE);
 
     NRF_CRYPTOCELL->ENABLE = 1;
 
-    cc3xx_lowlevel_hash_set_state((struct cc3xx_hash_state_t *)ctx->data);
+    cc3xx_lowlevel_hash_set_state(hash_state);
 
     cc3xx_err_t status;
     /* Does this make sense? Shouldn't this be done by a higher level operation? What about overhead? */
@@ -90,7 +107,7 @@ CYS_error_t tee_hash_sha256_update(io_pack_in_t *in, size_t in_len, io_pack_out_
         }
     }
 
-    cc3xx_lowlevel_hash_get_state((struct cc3xx_hash_state_t *)ctx->data);
+    cc3xx_lowlevel_hash_get_state(hash_state);
 
 exit:
     (void) out;
@@ -107,8 +124,15 @@ CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    CYS_hash_sha256_ctx_t *ctx = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *digest = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    size_t ctx_len = in[0].len;
+    size_t digest_size = out[0].len;
+
+    if (ctx_len != sizeof(CYS_hash_sha256_ctx_t)) {
+        return CYS_ERROR_INVALID_ARGUMENT;
+    }
+
+    CYS_hash_sha256_ctx_t *ctx = cmse_check_address_range((void *)in[0].data, ctx_len, CMSE_NONSECURE);
+    uint8_t *digest = cmse_check_address_range(out[0].data, digest_size, CMSE_NONSECURE);
 
     if (ctx == NULL || digest == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
@@ -116,8 +140,9 @@ CYS_error_t tee_hash_sha256_finish(io_pack_in_t *in, size_t in_len, io_pack_out_
 
     NRF_CRYPTOCELL->ENABLE = 1;
 
-    cc3xx_lowlevel_hash_set_state((struct cc3xx_hash_state_t *)ctx->data);
-    cc3xx_lowlevel_hash_finish((uint32_t *)digest, out[0].len);
+    struct cc3xx_hash_state_t *hash_state = cmse_check_address_range((void *)ctx->data, sizeof(struct cc3xx_hash_state_t), CMSE_NONSECURE);
+    cc3xx_lowlevel_hash_set_state(hash_state);
+    cc3xx_lowlevel_hash_finish((uint32_t *)digest, digest_size);
 
     cc3xx_lowlevel_hash_uninit();
     NRF_CRYPTOCELL->ENABLE = 0;
