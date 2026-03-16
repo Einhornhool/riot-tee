@@ -91,8 +91,8 @@ CYS_error_t tee_generate_random_bytes(io_pack_in_t *in, size_t in_len, io_pack_o
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    uint8_t *buffer = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
     size_t size = out[0].len;
+    uint8_t *buffer = cmse_check_address_range(out[0].data, size, CMSE_NONSECURE);
 
     if (buffer == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;

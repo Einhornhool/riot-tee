@@ -69,16 +69,20 @@ CYS_error_t tee_prot_ecc_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_
     }
 
     CYS_error_t status;
+    
+    size_t pubkey_size = out[1].len;
 
     CYS_PROT_ecc_p256_key_t *sealed_key =
         (CYS_PROT_ecc_p256_key_t *)cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
-    uint8_t *pub_key = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[1].data, pubkey_size, CMSE_NONSECURE);
 
     if (sealed_key == NULL || pub_key == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    size_t pubkey_size = out[1].len;
+    size_t nonce_size = sizeof(sealed_key->nonce);
+    void* nonce_ptr = cmse_check_address_range(sealed_key->nonce, nonce_size, CMSE_NONSECURE);
+
     uint8_t priv_tmp[TEE_ECC_P256_PRIV_KEY_SIZE];
 
     status = tee_internal_ecc_genkey(CC3XX_EC_CURVE_SECP_256_R1, priv_tmp, sizeof(priv_tmp));
@@ -91,7 +95,7 @@ CYS_error_t tee_prot_ecc_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_
         return status;
     }
 
-    status = tee_internal_generate_random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce));
+    status = tee_internal_generate_random_bytes(nonce_ptr, nonce_size);
     if (status != CYS_SUCCESS) {
         return status;
     }
@@ -112,7 +116,10 @@ CYS_error_t tee_prot_ecc_p256_seal(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    CYS_error_t status = tee_internal_generate_random_bytes(sealed_key->nonce, sizeof(sealed_key->nonce));
+    size_t nonce_size = sizeof(sealed_key->nonce);
+    void* nonce_ptr = cmse_check_address_range(sealed_key->nonce, nonce_size, CMSE_NONSECURE);
+
+    CYS_error_t status = tee_internal_generate_random_bytes(nonce_ptr, nonce_size);
     if (status != CYS_SUCCESS) {
         return status;
     }
@@ -126,14 +133,15 @@ CYS_error_t tee_prot_ecc_p256_derive(io_pack_in_t *in, size_t in_len, io_pack_ou
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
+    size_t pubkey_size = out[0].len;
+
     CYS_PROT_ecc_p256_key_t *key = (CYS_PROT_ecc_p256_key_t *)cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *pub_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[0].data, pubkey_size, CMSE_NONSECURE);
 
     if (key == NULL || pub_key == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
 
-    size_t pubkey_size = out[1].len;
     uint8_t key_clear[TEE_ECC_P256_PRIV_KEY_SIZE];
     CYS_error_t status = tee_rot_decrypt_key_ocb(key, key_clear);
     if (status != CYS_SUCCESS) {
@@ -172,18 +180,18 @@ CYS_error_t tee_prot_ecc_p256_sign(io_pack_in_t *in, size_t in_len, io_pack_out_
     if (in_len != 2 || out_len != 1) {
         return CYS_ERROR_INVALID_ARGUMENT;
     }
+    
+        size_t hash_len = in[1].len;
+        size_t signature_size = out[0].len;
 
     CYS_PROT_ecc_p256_key_t *key =
         (CYS_PROT_ecc_p256_key_t *)cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *hash = cmse_check_address_range((void *)in[1].data, in[1].len, CMSE_NONSECURE);
-    uint8_t *signature = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    uint8_t *hash = cmse_check_address_range((void *)in[1].data, hash_len, CMSE_NONSECURE);
+    uint8_t *signature = cmse_check_address_range(out[0].data, signature_size, CMSE_NONSECURE);
 
     if (key == NULL || hash == NULL || signature == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
-
-    size_t hash_len = in[1].len;
-    size_t signature_size = out[0].len;
 
     if (hash_len != TEE_ECC_P256_HASH_SIZE ||
         signature_size < TEE_ECC_P256_SIGNATURE_SIZE) {
@@ -207,15 +215,15 @@ CYS_error_t tee_ecc_p256_generate(io_pack_in_t *in, size_t in_len, io_pack_out_t
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    uint8_t *priv_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
-    uint8_t *pub_key = cmse_check_address_range(out[1].data, out[1].len, CMSE_NONSECURE);
+    size_t priv_key_len = out[0].len;
+    size_t pub_key_len = out[1].len;
+
+    uint8_t *priv_key = cmse_check_address_range(out[0].data, priv_key_len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[1].data, pub_key_len, CMSE_NONSECURE);
 
     if (priv_key == NULL || pub_key == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
-
-    size_t priv_key_len = out[0].len;
-    size_t pub_key_len = out[1].len;
 
     if (priv_key_len != TEE_ECC_P256_PRIV_KEY_SIZE ||
         pub_key_len != TEE_ECC_P256_PUB_KEY_SIZE) {
@@ -238,10 +246,11 @@ CYS_error_t tee_ecc_p256_derive(io_pack_in_t *in, size_t in_len, io_pack_out_t *
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    uint8_t *priv_key = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *pub_key = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
     size_t priv_key_len = in[0].len;
     size_t pub_key_len = out[0].len;
+
+    uint8_t *priv_key = cmse_check_address_range((void *)in[0].data, priv_key_len, CMSE_NONSECURE);
+    uint8_t *pub_key = cmse_check_address_range(out[0].data, pub_key_len, CMSE_NONSECURE);
 
     if (priv_key == NULL || pub_key == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
@@ -256,16 +265,16 @@ CYS_error_t tee_ecc_p256_sign_hash(io_pack_in_t *in, size_t in_len, io_pack_out_
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
+    size_t hash_len = in[1].len;
+    size_t signature_size = out[0].len;
+
     uint8_t *key = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *hash = cmse_check_address_range((void *)in[1].data, in[1].len, CMSE_NONSECURE);
-    uint8_t *signature = cmse_check_address_range(out[0].data, out[0].len, CMSE_NONSECURE);
+    uint8_t *hash = cmse_check_address_range((void *)in[1].data, hash_len, CMSE_NONSECURE);
+    uint8_t *signature = cmse_check_address_range(out[0].data, signature_size, CMSE_NONSECURE);
 
     if (key == NULL || hash == NULL || signature == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
-
-    size_t hash_len = in[1].len;
-    size_t signature_size = out[0].len;
 
     if (hash_len != TEE_ECC_P256_HASH_SIZE ||
         signature_size < TEE_ECC_P256_SIGNATURE_SIZE) {
@@ -310,17 +319,17 @@ CYS_error_t tee_ecc_p256_verify_hash(io_pack_in_t *in, size_t in_len, io_pack_ou
         return CYS_ERROR_INVALID_ARGUMENT;
     }
 
-    uint8_t *key = cmse_check_address_range((void *)in[0].data, in[0].len, CMSE_NONSECURE);
-    uint8_t *hash = cmse_check_address_range((void *)in[1].data, in[1].len, CMSE_NONSECURE);
-    uint8_t *signature = cmse_check_address_range((void *)in[2].data, in[2].len, CMSE_NONSECURE);
+    size_t key_len = in[0].len;
+    size_t hash_len = in[1].len;
+    size_t signature_len = in[2].len;
+
+    uint8_t *key = cmse_check_address_range((void *)in[0].data, key_len, CMSE_NONSECURE);
+    uint8_t *hash = cmse_check_address_range((void *)in[1].data, hash_len, CMSE_NONSECURE);
+    uint8_t *signature = cmse_check_address_range((void *)in[2].data, signature_len, CMSE_NONSECURE);
 
     if (key == NULL || hash == NULL || signature == NULL) {
         return CYS_ERROR_CORRUPTION_DETECTED;
     }
-
-    size_t key_len = in[0].len;
-    size_t hash_len = in[1].len;
-    size_t signature_len = in[2].len;
 
     if (key_len != TEE_ECC_P256_PUB_KEY_SIZE ||
         hash_len != TEE_ECC_P256_HASH_SIZE ||
